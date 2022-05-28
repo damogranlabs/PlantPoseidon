@@ -1,7 +1,67 @@
 #include <Arduino.h>
 
-#include "globals.h"
+#include "util.h"
+#include "display.h"
 
+///
+/// PROGMEM stuff
+///
+
+char pgm_buffer[STR_BUFSIZE];
+
+char *pgm_to_buffer(const char *text){
+    // copies a PROGMEMed string pgm::buffer, returning pointer to it
+    memset(pgm_buffer, 0, STR_BUFSIZE);
+
+    char c;
+    unsigned int i;
+
+    for(i = 0; i < strlen_P(text) || i < STR_BUFSIZE-1; i++){
+        c = pgm_read_byte_near(text + i);
+        pgm_buffer[i] = c;
+    }
+
+    return pgm_buffer;
+}
+
+int pgm_to_lcd(int line, int column, const char *text){
+    // reads a string from PROGMEM and outputs it directly to LiquidCrystal,
+    // skipping buffering
+    char c;
+    unsigned int i;
+
+    for(i = 0; i < strlen_P(text); i++){
+        c = pgm_read_byte_near(text + i);
+        lcd.setCursor(column + i, line);
+        lcd.print(c);
+    }
+
+    return i;
+}
+
+char *pgm_table_to_buffer(const char *const *table, int i_entry){
+    // copies an entry from a string table stored in PROGMEM to pgm::buffer, returning pointer to it
+    memset(pgm_buffer, 0, STR_BUFSIZE);
+    strncpy_P(pgm_buffer, (char*)pgm_read_word(&(table[i_entry])), STR_BUFSIZE-1);
+
+    return pgm_buffer;
+}
+
+int pgm_table_to_lcd(int line, int column, const char * const *table, int i_entry){
+    // reads an entry from a string table stored in PROGMEM
+    // https://www.arduino.cc/reference/en/language/variables/utilities/progmem/
+    memset(pgm_buffer, 0, STR_BUFSIZE);
+
+    strncpy_P(pgm_buffer, (char*)pgm_read_word(&(table[i_entry])), STR_BUFSIZE-1);
+    lcd.setCursor(column, line);
+    lcd.print(pgm_buffer);
+
+    return strlen(pgm_buffer);
+}
+
+///
+/// Misc
+///
 int getDigitCount(int value){
     int digits = 0, remainder = value;
 
@@ -32,53 +92,3 @@ unsigned long crc(uint8_t *data, int size){
 
     return crc;
 }
-
-void easeMove(int new_angle){
-    // tabulated f(x) = 1000 * (-(cos(pi*x) - 1)/2)
-    // https://easings.net/#easeInOutSine
-    const int fx[] PROGMEM = {
-          0,   1,   2,   5,  10,  15,  22,  29,
-         38,  48,  59,  71,  84,  98, 113, 130,
-        146, 164, 183, 202, 222, 243, 264, 286,
-        309, 332, 355, 379, 402, 427, 451, 475,
-        500, 525, 549, 573, 598, 621, 645, 668,
-        691, 714, 736, 757, 778, 798, 817, 836,
-        854, 870, 887, 902, 916, 929, 941, 952,
-        962, 971, 978, 985, 990, 995, 998, 1000, 1000
-    };
-    #define N_SAMPLES (sizeof(fx)/sizeof(fx[0]))
-
-    if(new_angle < 200){
-        // when setting limits through menu, the servo moves to current item value,
-        // which is in 'microseconds'; this is also the convention of the Servo library
-        new_angle = (int)((long)new_angle*(long)(servo_max - servo_min)/180 + servo_min);
-    }
-
-    long old_angle = (long)servo.readMicroseconds();
-    long delta_angle = (long)new_angle - old_angle;
-
-    if(delta_angle == 0) return;
-
-    unsigned long t_start = millis();
-    unsigned long delta_t = T_MAX*abs(delta_angle) / (servo_max - servo_min);
-    unsigned long t_end = t_start + delta_t;
-    unsigned long t_now = t_start;
-    
-    // subdivisions: linear interpolation between tabulated points,
-    unsigned int i_left, i_right;
-    unsigned long t_left, dt = delta_t/N_SAMPLES;
-    int r;
-    
-    while(t_now < t_end){
-        t_now = millis();
-
-        i_left = (t_now - t_start)/dt;
-        i_left = i_left >= N_SAMPLES ? N_SAMPLES-2 : i_left;
-        i_right = i_left + 1;
-
-        t_left = t_start + i_left*dt;
-
-        r = (fx[i_left] + (fx[i_right] - fx[i_left])*((int)(t_now - t_left)/dt));
-        servo.writeMicroseconds(old_angle + (delta_angle * r)/fx[N_SAMPLES-1]);
-    }
-};

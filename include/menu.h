@@ -174,4 +174,13 @@ public:
     void change(int direction){ ChoiceItem::change(direction); renderValue(); activate(); };
 };
 
+
+///
+/// Globals
+///
+// number of menu screens: outlets + clock + servo
+#define N_SCREENS (N_OUTLETS + 2)
+extern Screen *screens[N_SCREENS];
+extern Menu menu;
+
 #endif // _MENU_H

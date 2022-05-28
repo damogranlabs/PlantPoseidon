@@ -4,7 +4,9 @@
 #include "outlet.h"
 #include "util.h"
 
-
+///
+/// Methods and all
+///
 Outlet::Outlet(int outlet_id){
     id = outlet_id;
     angle = id*360/N_OUTLETS;
@@ -27,7 +29,7 @@ void Outlet::load(void){
     // CRC check if everything is OK;
     // this is written in EEPROM
     unsigned long saved_crc;
-    EEPROM.get(address + sizeof(struct sdata), saved_crc);
+    EEPROM.get(address + sizeof(struct schedule_data), saved_crc);
     // this is what has just been loaded
     unsigned long loaded_crc = crc((uint8_t *)&schedule, sizeof(schedule));
     
@@ -43,7 +45,7 @@ void Outlet::load(void){
 void Outlet::save(void){
     EEPROM.put(address, schedule);
 
-    // write a crc after sdata
+    // write a crc after schedule_data
     unsigned long check = crc((uint8_t *)&schedule, sizeof(schedule));
     EEPROM.put(address + sizeof(schedule), check);
 }
@@ -57,3 +59,8 @@ void Outlet::close(void){
     // turn off the pump/close the valve
     digitalWrite(13, LOW);
 }
+
+///
+/// Globals
+///
+Outlet *outlets[N_OUTLETS];

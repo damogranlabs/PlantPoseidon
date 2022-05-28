@@ -1,8 +1,8 @@
 #include <Arduino.h>
 
-#include "globals.h"
+#include "display.h"
 #include "menu.h"
-#include "progmem.h"
+#include "fervo.h"
 #include "util.h"
 
 /************** Base **************/
@@ -103,9 +103,9 @@ ServoScreen::ServoScreen(void){
     n_items = 3;
     items = new Item * [n_items];
 
-    items[0] = new Item(servo_min_label, 1, 0, servo_min, true, (char)0, 100, 3000);
-    items[1] = new Item(servo_max_label, 2, 0, servo_max, true, (char)0, 100, 3000);
-    items[2] = new Item(servo_zero_label, 3, 0, servo_zero, true, (char)0, 100, 3000);
+    items[0] = new Item(servo_min_label, 1, 0, servo.getMin(), true, (char)0, 100, 3000);
+    items[1] = new Item(servo_max_label, 2, 0, servo.getMax(), true, (char)0, 100, 3000);
+    items[2] = new Item(servo_zero_label, 3, 0, servo.getZero(), true, (char)0, 100, 3000);
 };
 
 void ServoScreen::show(bool forward){
@@ -117,10 +117,12 @@ void ServoScreen::show(bool forward){
 
 void ServoScreen::change(int direction){
     Screen::change(direction*10);
-    easeMove(items[i_item]->getValue());
+    servo.easeMove(items[i_item]->getValue());
 };
 
 void ServoScreen::save(void){
-    servo_min = items[0]->getValue();
-    servo_max = items[1]->getValue();
+    servo.setMin(items[0]->getValue());
+    servo.setMax(items[1]->getValue());
+    servo.setZero(items[2]->getValue());
+    servo.save();
 }

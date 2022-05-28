@@ -1,13 +1,9 @@
-#ifndef _GLOBALS_H
-#define _GLOBALS_H
+#ifndef _DISPLAY_H
+#define _DISPLAY_H
 
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 
-#include "pinout.h"
-#include "button.h"
-#include "menu.h"
-#include "fervo.h"
 
 // Menu texts
 extern unsigned char arrow_left[8];
@@ -38,21 +34,5 @@ extern LiquidCrystal lcd;
 #define CC_RIGHT 1
 #define CC_ON 2
 #define CC_OFF 3
-
-extern Button up;
-extern Button down;
-extern Button left;
-extern Button right;
-
-extern Outlet *outlets[N_OUTLETS];
-#define N_SCREENS (N_OUTLETS + 2)
-extern Screen *screens[N_SCREENS];
-
-// motor
-#define SERVO_T_MAX 3000 // max easing time (180 degrees, less is scaled)
-#define SERVO_ADDRESS 1024
-extern Fervo servo;
-
-extern Menu menu;
 
 #endif

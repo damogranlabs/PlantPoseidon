@@ -1,8 +1,7 @@
 #include <Arduino.h>
 
+#include "display.h"
 #include "menu.h"
-#include "progmem.h"
-#include "globals.h"
 #include "util.h"
 
 Item::Item(const char *l, int r, int c, int v)

@@ -1,13 +1,12 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 
+#include "display.h"
 #include "pinout.h"
-#include "button.h"
-#include "globals.h"
-#include "menu.h"
-#include "fervo.h"
 
-// display: custom characters
+///
+/// Custom characters
+///
 unsigned char arrow_left[8] = {
     0b00001,
     0b00010,
@@ -54,8 +53,9 @@ unsigned char bool_off[8] = {
     0b00000
 };
 
-
-// Text
+///
+/// Menu texts
+///
 const char active_label[] PROGMEM = "Vklop";
 
 // interval in hours
@@ -83,16 +83,8 @@ const char servo_min_label[] PROGMEM = "Min. kot";
 const char servo_max_label[] PROGMEM = "Max. kot";
 const char servo_zero_label[] PROGMEM = "Pozicija #1";
 
+
+///
+/// LCD object
+///
 LiquidCrystal lcd(P_LCD_RS, P_LCD_EN, P_LCD_D4, P_LCD_D5, P_LCD_D6, P_LCD_D7);
-
-Button up(P_BTN_UP, PULLUP);
-Button down(P_BTN_DOWN, PULLUP);
-Button left(P_BTN_LEFT, PULLUP);
-Button right(P_BTN_RIGHT, PULLUP);
-
-Outlet *outlets[N_OUTLETS];
-Screen *screens[N_SCREENS];
-
-Fervo servo;
-
-Menu menu(&up, &down, &left, &right, screens, N_SCREENS);

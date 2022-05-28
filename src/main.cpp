@@ -4,11 +4,11 @@
 #include "pinout.h"
 
 #include "button.h"
+#include "display.h"
 #include "menu.h"
 #include "outlet.h"
+#include "fervo.h"
 #include "util.h"
-
-#include "globals.h"
 
 void setup() {
     // display
@@ -44,15 +44,15 @@ void loop() {
     lcd.setCursor(0, 0);
     lcd.print(millis()/1000);
     
-    easeMove(0);
+    servo.easeMove(0);
     delay(1000);
-    easeMove(22);
+    servo.easeMove(22);
     delay(1000);
-    easeMove(45);
+    servo.easeMove(45);
     delay(1000);
-    easeMove(90);
+    servo.easeMove(90);
     delay(1000);
-    easeMove(180);
+    servo.easeMove(180);
     delay(1000);
 
 }

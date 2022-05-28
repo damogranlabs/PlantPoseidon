@@ -1,30 +1,17 @@
-/*
-||
-|| @file Button.cpp
-|| @version 1.6
-|| @author Alexander Brevig
-|| @contact alexanderbrevig@gmail.com
-||
-|| @description
-|| | Provide an easy way of making buttons
-|| #
-||
-|| @license
-|| | Copyright (c) 2009 Alexander Brevig. All rights reserved.
-|| | This code is subject to AlphaLicence.txt
-|| | alphabeta.alexanderbrevig.com/AlphaLicense.txt
-|| #
-||
-*/
-
-//include the class definition
 #include "button.h"
+#include "pinout.h"
 
-/*
-|| <<constructor>>
-|| @parameter buttonPin sets the pin that this switch is connected to
-|| @parameter buttonMode indicates PULLUP or PULLDOWN resistor
-*/
+///
+/// Globals
+///
+Button up(P_BTN_UP, PULLUP);
+Button down(P_BTN_DOWN, PULLUP);
+Button left(P_BTN_LEFT, PULLUP);
+Button right(P_BTN_RIGHT, PULLUP);
+
+///
+/// The library, shamelessly copied from github, albeit a very old version
+///
 Button::Button(uint8_t buttonPin, uint8_t buttonMode){
 	this->pin=buttonPin;
     pinMode(pin,INPUT);
@@ -91,16 +78,3 @@ bool Button::stateChanged(void){
 bool Button::uniquePress(void){
     return (isPressed() && stateChanged());
 }
-
-/*
-|| @changelog
-|| | 2009-05-05 - Alexander Brevig : Added uniquePress()
-|| | 2009-04-24 - Alexander Brevig : Added wasPressed()
-|| | 2009-04-12 - Alexander Brevig : Added constructor
-|| |                                 Shortened logic
-|| | 2009-04-10 - Alexander Brevig : Namechange from Switch
-|| | 2009-04-07 - Alexander Brevig : Altered API
-|| | 2008-10-23 - Alexander Brevig : Initial Release
-|| | 2008-10-22 - Alexander Brevig : Class implemented
-|| #
-*/
