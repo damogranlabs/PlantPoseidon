@@ -34,34 +34,51 @@ unsigned long crc(uint8_t *data, int size){
 }
 
 void easeMove(int new_angle){
+    // tabulated f(x) = 1000 * (-(cos(pi*x) - 1)/2)
+    // https://easings.net/#easeInOutSine
+    const int fx[] PROGMEM = {
+          0,   1,   2,   5,  10,  15,  22,  29,
+         38,  48,  59,  71,  84,  98, 113, 130,
+        146, 164, 183, 202, 222, 243, 264, 286,
+        309, 332, 355, 379, 402, 427, 451, 475,
+        500, 525, 549, 573, 598, 621, 645, 668,
+        691, 714, 736, 757, 778, 798, 817, 836,
+        854, 870, 887, 902, 916, 929, 941, 952,
+        962, 971, 978, 985, 990, 995, 998, 1000, 1000
+    };
+    #define N_SAMPLES (sizeof(fx)/sizeof(fx[0]))
 
-    // servos are quick but the plate is heavy;
-    // to reduce strain/wear on gears, ease the transition
-    // with a sinusoidal-ish function
-    // also, keep this function blocking as
-    // nothing is more important or satisfying than a turning motor
-    double old_angle = (double)servo.read();
+    if(new_angle < 200){
+        // when setting limits through menu, the servo moves to current item value,
+        // which is in 'microseconds'; this is also the convention of the Servo library
+        new_angle = (int)((long)new_angle*(long)(servo_max - servo_min)/180 + servo_min);
+    }
 
-    // TODO: integer math + tabulated equation
-    double delta_angle = (double)new_angle - old_angle;
+    long old_angle = (long)servo.readMicroseconds();
+    long delta_angle = (long)new_angle - old_angle;
 
-    // the move starts now
-    // and lasts at most T_MAX ms; smaller deltas need less time
-    double t_start = (double)millis();
-    double delta_t = abs(delta_angle)*T_MAX/180;
-    double t_end = t_start + delta_t;
-    double t_now = t_start;
+    if(delta_angle == 0) return;
 
-    // scale t_start...t_end => t => to 0...1,
-    // then map t =  -(cos(pi*t) - 1)/2
-    double t, p; 
+    unsigned long t_start = millis();
+    unsigned long delta_t = T_MAX*abs(delta_angle) / (servo_max - servo_min);
+    unsigned long t_end = t_start + delta_t;
+    unsigned long t_now = t_start;
+    
+    // subdivisions: linear interpolation between tabulated points,
+    unsigned int i_left, i_right;
+    unsigned long t_left, dt = delta_t/N_SAMPLES;
+    int r;
     
     while(t_now < t_end){
-        t = (t_now - t_start) / delta_t;
-        p = (double)old_angle + delta_angle*(-(cos(PI*t) - 1)/2);
+        t_now = millis();
 
-        servo.write((int)p);
-        
-        t_now = (double)millis();
+        i_left = (t_now - t_start)/dt;
+        i_left = i_left >= N_SAMPLES ? N_SAMPLES-2 : i_left;
+        i_right = i_left + 1;
+
+        t_left = t_start + i_left*dt;
+
+        r = (fx[i_left] + (fx[i_right] - fx[i_left])*((int)(t_now - t_left)/dt));
+        servo.writeMicroseconds(old_angle + (delta_angle * r)/fx[N_SAMPLES-1]);
     }
 };

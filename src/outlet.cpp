@@ -27,7 +27,7 @@ void Outlet::load(void){
     // CRC check if everything is OK;
     // this is written in EEPROM
     unsigned long saved_crc;
-    EEPROM.get(sizeof(struct sdata), saved_crc);
+    EEPROM.get(address + sizeof(struct sdata), saved_crc);
     // this is what has just been loaded
     unsigned long loaded_crc = crc((uint8_t *)&schedule, sizeof(schedule));
     

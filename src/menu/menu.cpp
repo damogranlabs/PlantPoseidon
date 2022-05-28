@@ -2,6 +2,35 @@
 #include "menu.h"
 #include "globals.h"
 
+
+// Text
+const char active_label[] PROGMEM = "Vklop";
+
+// interval in hours
+const char interval_label[] PROGMEM = "Zalij na";
+const int intervals[] PROGMEM = {
+    12, 24, 2*24, 3*24, 4*24, 5*24, 6*24, // 0.5, 1, 2, 3, 4, 5, 6 days
+    7*24, 2*7*24, 3*7*24, 4*7*24, // 1, 2, 3, 4 weeks
+    -1 // end
+};
+
+// valve open duration in seconds
+const char duration_label[] PROGMEM = "za";
+const int durations[] PROGMEM = {
+    1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 90, 120, 180, 240, 300,
+    -1
+};
+
+// clock
+const char time_label[] PROGMEM = "ob";
+const char clock_point[] PROGMEM = ":";
+const char date_point[] PROGMEM = ".";
+
+// servo
+const char servo_min_label[] PROGMEM = "Min. kot";
+const char servo_max_label[] PROGMEM = "Max. kot";
+const char servo_zero_label[] PROGMEM = "Pozicija #1";
+
 Menu::Menu(
     Button *b_prev, Button *b_next, Button *b_dec, Button *b_inc,
     Screen **s, int n)

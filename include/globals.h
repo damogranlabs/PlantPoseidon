@@ -3,11 +3,11 @@
 
 #include <Arduino.h>
 #include <LiquidCrystal.h>
-#include <Servo.h>
 
 #include "pinout.h"
 #include "button.h"
 #include "menu.h"
+#include "fervo.h"
 
 // Menu texts
 extern unsigned char arrow_left[8];
@@ -26,6 +26,10 @@ extern const char time_label[] PROGMEM;
 extern const char clock_point[] PROGMEM;
 extern const char date_point[] PROGMEM;
 
+extern const char servo_min_label[] PROGMEM;
+extern const char servo_max_label[] PROGMEM;
+extern const char servo_zero_label[] PROGMEM;
+
 // Display
 extern LiquidCrystal lcd;
 // custom character indexes
@@ -41,12 +45,14 @@ extern Button left;
 extern Button right;
 
 extern Outlet *outlets[N_OUTLETS];
-#define N_SCREENS (N_OUTLETS + 1)
+#define N_SCREENS (N_OUTLETS + 2)
 extern Screen *screens[N_SCREENS];
-extern Menu menu;
 
 // motor
-#define T_MAX 10000 // max easing time (180 degrees, less is scaled)
-extern Servo servo;
+#define SERVO_T_MAX 3000 // max easing time (180 degrees, less is scaled)
+#define SERVO_ADDRESS 1024
+extern Fervo servo;
+
+extern Menu menu;
 
 #endif

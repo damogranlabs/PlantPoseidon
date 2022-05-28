@@ -26,9 +26,11 @@ void setup() {
         screens[i] = new OutletScreen(outlets[i]);
     }
     screens[N_OUTLETS] = new ClockScreen();
+    screens[N_OUTLETS+1] = new ServoScreen();
 
     // mechanics
     servo.attach(P_SERVO);
+    servo.write(90);
 }
 
 void loop() {
@@ -42,26 +44,15 @@ void loop() {
     lcd.setCursor(0, 0);
     lcd.print(millis()/1000);
     
-    // servo.move(-90);
-    // delay(1000);
-    // servo.move(0);
-    // delay(1000);
-    // servo.move(45);
-    // delay(1000);
-    // servo.move(73);
-    // delay(1000);
+    easeMove(0);
+    delay(1000);
+    easeMove(22);
+    delay(1000);
     easeMove(45);
     delay(1000);
     easeMove(90);
     delay(1000);
-    easeMove(0);
-    delay(1000);
     easeMove(180);
     delay(1000);
-    easeMove(90);
-    delay(1000);
-    easeMove(80);
-    delay(1000);
-    easeMove(60);
-    delay(1000);
+
 }
