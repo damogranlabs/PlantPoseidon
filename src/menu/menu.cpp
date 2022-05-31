@@ -2,12 +2,17 @@
 #include "menu.h"
 #include "display.h"
 
+#include "io.h"
+
+extern OneButton btn_flood_stop, btn_next, btn_setup, btn_prev;
+
 ///
 /// Classes and methods
 ///
 Menu::Menu(
     Button *b_prev, Button *b_next, Button *b_dec, Button *b_inc,
-    Screen **s, int n)
+    Screen **s,
+    int n)
 {
     button_prev = b_prev;
     button_next = b_next;

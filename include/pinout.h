@@ -29,7 +29,7 @@
 #define MOIST2_PIN A1
 #define MOIST1_PIN A2
 
-// Buttons
+// Buttons TODO rewrite to buttons above (BTN_*)
 #define P_BTN_LEFT 10
 #define P_BTN_DOWN 6
 #define P_BTN_UP 8
