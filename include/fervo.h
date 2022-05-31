@@ -7,7 +7,7 @@
 ///
 /// Settings
 ///
-#define SERVO_T_MOVE 3000 // max easing time (180 degrees, less is scaled)
+#define SERVO_T_MOVE 3000  // max easing time (180 degrees, less is scaled)
 #define SERVO_ADDRESS 1024 // EEPROM
 
 #define SERVO_MAX 2300 // maximum pulse width that still turns the shaft
@@ -16,7 +16,8 @@
 ///
 /// Class definitions
 ///
-struct servo_data {
+struct servo_data
+{
     int min;
     int max;
     int zero;
@@ -31,16 +32,17 @@ public:
     void easeMove(int new_angle);
 
     // add a few details for easier handling of settings;
-    int getMin(void){ return data.min; };
-    int getMax(void){ return data.max; };
-    int getZero(void){ return data.zero; };
+    int getMin(void) { return data.min; };
+    int getMax(void) { return data.max; };
+    int getZero(void) { return data.zero; };
 
-    void setMin(int v){ data.min = v; };
-    void setMax(int v){ data.max = v; };
-    void setZero(int v){ data.zero = v; };
+    void setMin(int v) { data.min = v; };
+    void setMax(int v) { data.max = v; };
+    void setZero(int v) { data.zero = v; };
 
     void load(void);
     void save(void);
+
 private:
     servo_data data;
 };
@@ -49,5 +51,7 @@ private:
 /// Globals
 ///
 extern Fervo servo;
+
+void setup_servo(void);
 
 #endif

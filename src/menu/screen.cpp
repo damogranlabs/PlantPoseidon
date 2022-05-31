@@ -5,49 +5,61 @@
 #include "fervo.h"
 #include "util.h"
 
-/************** Base **************/
-void Screen::show(bool forward){
-    // show the items
-    if(items == NULL) return;
+#include "io.h"
 
-    for(int i = 0; i < n_items; i++){
+/************** Base **************/
+void Screen::show(bool forward)
+{
+    // show the items
+    if (items == NULL)
+        return;
+
+    for (int i = 0; i < n_items; i++)
+    {
         items[i]->show();
     }
 
     // activate first item if forward and vice versa
-    if(forward) i_item = 0;
-    else i_item = n_items - 1;
+    if (forward)
+        i_item = 0;
+    else
+        i_item = n_items - 1;
 
     items[i_item]->activate();
 }
 
-void Screen::hide(void){
+void Screen::hide(void)
+{
     lcd.clear();
 }
 
-bool Screen::navigate(int direction){
+bool Screen::navigate(int direction)
+{
     // deactivate current item and activate the next one;
     items[i_item]->deactivate();
 
     i_item += direction;
 
     // return false if we're out of this screen
-    if(i_item < 0 || i_item >= n_items) return false;
+    if (i_item < 0 || i_item >= n_items)
+        return false;
 
     items[i_item]->activate();
-    return true;    
+    return true;
 }
 
-void Screen::change(int direction){
+void Screen::change(int direction)
+{
     items[i_item]->change(direction);
 }
 
 /************** Outlet screen **************/
-OutletScreen::OutletScreen(Outlet *o){
+OutletScreen::OutletScreen(Outlet *o)
+{
     // currently selected outlet
     outlet = o;
     n_items = 4;
-    items = new Item * [n_items]; // https://stackoverflow.com/questions/21391089/variable-size-array-of-pointers-c
+    items = new Item *[n_items]; // https://stackoverflow.com/questions/21391089/variable-size-array-of-pointers-c
 
     items[0] = new BoolItem(active_label, 0, 12, outlet->getSchedule()->enabled ? 1 : 0);
     items[1] = new IntervalItem(interval_label, 1, 0, outlet->getSchedule()->interval, intervals);
@@ -58,7 +70,8 @@ OutletScreen::OutletScreen(Outlet *o){
     // TODO
 }
 
-void OutletScreen::show(bool forward){
+void OutletScreen::show(bool forward)
+{
     lcd.setCursor(0, 0);
     lcd.print(F("Rastlina "));
     lcd.print(outlet->getId() + 1);
@@ -66,20 +79,21 @@ void OutletScreen::show(bool forward){
     Screen::show(forward);
 }
 
-void OutletScreen::save(void){
+void OutletScreen::save(void)
+{
     outlet->updateSchedule(
         items[0]->getValue() != 0,
         items[1]->getValue(),
         items[2]->getValue(),
-        items[3]->getValue()
-    );
+        items[3]->getValue());
     outlet->save();
 }
 
 /************** Clock screen **************/
-ClockScreen::ClockScreen(void){
+ClockScreen::ClockScreen(void)
+{
     n_items = 5;
-    items = new Item * [n_items];
+    items = new Item *[n_items];
 
     // hour and minute
     items[0] = new Item(NULL, 1, 11, 0, true, (char)0, 0, 23);
@@ -91,7 +105,8 @@ ClockScreen::ClockScreen(void){
     items[4] = new Item(date_point, 2, 13, 2022, false, (char)0, 2022, 2052);
 }
 
-void ClockScreen::show(bool forward){
+void ClockScreen::show(bool forward)
+{
     lcd.setCursor(0, 0);
     lcd.print(F("Ura in datum"));
 
@@ -99,28 +114,32 @@ void ClockScreen::show(bool forward){
 }
 
 /************** Servo screen **************/
-ServoScreen::ServoScreen(void){
+ServoScreen::ServoScreen(void)
+{
     n_items = 3;
-    items = new Item * [n_items];
+    items = new Item *[n_items];
 
     items[0] = new Item(servo_min_label, 1, 0, servo.getMin(), true, (char)0, 100, 3000);
     items[1] = new Item(servo_max_label, 2, 0, servo.getMax(), true, (char)0, 100, 3000);
     items[2] = new Item(servo_zero_label, 3, 0, servo.getZero(), true, (char)0, 100, 3000);
 };
 
-void ServoScreen::show(bool forward){
+void ServoScreen::show(bool forward)
+{
     lcd.setCursor(0, 0);
     lcd.print(F("Servo"));
 
     Screen::show(forward);
 }
 
-void ServoScreen::change(int direction){
-    Screen::change(direction*10);
+void ServoScreen::change(int direction)
+{
+    Screen::change(direction * 10);
     servo.easeMove(items[i_item]->getValue());
 };
 
-void ServoScreen::save(void){
+void ServoScreen::save(void)
+{
     servo.setMin(items[0]->getValue());
     servo.setMax(items[1]->getValue());
     servo.setZero(items[2]->getValue());

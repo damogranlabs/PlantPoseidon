@@ -2,7 +2,7 @@
 #define _MENU_H
 
 #include <Arduino.h>
-#include <LiquidCrystal.h>
+#include <hd44780.h>
 #include <EEPROM.h>
 #include <math.h>
 
@@ -32,9 +32,8 @@ extern const char servo_min_label[] PROGMEM;
 extern const char servo_max_label[] PROGMEM;
 extern const char servo_zero_label[] PROGMEM;
 
-
 // Menu classes:
-class Menu;     // a collection of Screens
+class Menu;   // a collection of Screens
 class Screen; // a collection of Items
 
 class Item;
@@ -47,8 +46,8 @@ class Menu
 {
 public:
     Menu(Button *b_prev, Button *b_next, Button *b_dec, Button *b_inc,
-    Screen **s, int n_screens);
-    
+         Screen **s, int n_screens);
+
     bool check(void); // checks what happened and 'sends a message' to current screen
 
 private:
@@ -62,7 +61,6 @@ private:
     unsigned long t_touched; // time the last button was pressed
 };
 
-
 class Screen
 {
 public:
@@ -72,12 +70,14 @@ public:
     bool navigate(int direction);
     virtual void change(int direction);
     virtual void save(void) = 0;
+
 protected:
     Item **items;
     int n_items, i_item{0}; // number of items and index of active one
 };
 
-class OutletScreen : public Screen {
+class OutletScreen : public Screen
+{
 public:
     OutletScreen(Outlet *outlet);
     void show(bool forward);
@@ -87,7 +87,8 @@ private:
     Outlet *outlet; // outlet currently shown in this screen
 };
 
-class ClockScreen : public Screen {
+class ClockScreen : public Screen
+{
 public:
     ClockScreen();
 
@@ -95,7 +96,8 @@ public:
     void save(void){};
 };
 
-class ServoScreen : public Screen {
+class ServoScreen : public Screen
+{
 public:
     ServoScreen();
 
@@ -105,7 +107,6 @@ public:
     void save(void);
 };
 
-
 class Item // a generic integer item with label, unit and optional padding
 {
 public:
@@ -113,18 +114,19 @@ public:
     Item(const char *label, int line, int column, int value);
     // generic items
     Item(const char *label, int line, int column, int value,
-        bool pad, char unit, int low_limit, int high_limit);
+         bool pad, char unit, int low_limit, int high_limit);
 
     virtual void show(void);
 
     virtual void renderValue(void); // (re)draw the value (depends on item type)
     void clear(void);
-    void activate(void); // add increase/decrease markers
+    void activate(void);                // add increase/decrease markers
     virtual void change(int direction); // value +/-
-    void deactivate(void); // remove the markers
+    void deactivate(void);              // remove the markers
 
-    int getValue(void){ return value; };
-    void setValue(int v){ value = v; };
+    int getValue(void) { return value; };
+    void setValue(int v) { value = v; };
+
 protected:
     // lcd stuff
     const char *label;
@@ -141,9 +143,8 @@ protected:
 class BoolItem : public Item
 {
 public:
-    BoolItem(const char *label, int line, int column, int value):
-        Item(label, line, column, value, false, (char)0, 0, 1){ l_value = 1; };
-    
+    BoolItem(const char *label, int line, int column, int value) : Item(label, line, column, value, false, (char)0, 0, 1) { l_value = 1; };
+
     void renderValue(void);
 };
 
@@ -153,6 +154,7 @@ public:
     ChoiceItem(const char *label, int line, int column, int value, const int *choices);
     virtual void change(int direction);
     virtual void renderValue(void) = 0;
+
 private:
     const int *choices;
     int n_choices{0}, i_choice{0};
@@ -163,7 +165,12 @@ class IntervalItem : public ChoiceItem
 public:
     using ChoiceItem::ChoiceItem;
     void renderValue(void);
-    void change(int direction){ ChoiceItem::change(direction); renderValue(); activate(); };
+    void change(int direction)
+    {
+        ChoiceItem::change(direction);
+        renderValue();
+        activate();
+    };
 };
 
 class DurationItem : public ChoiceItem
@@ -171,15 +178,20 @@ class DurationItem : public ChoiceItem
 public:
     using ChoiceItem::ChoiceItem;
     void renderValue(void);
-    void change(int direction){ ChoiceItem::change(direction); renderValue(); activate(); };
+    void change(int direction)
+    {
+        ChoiceItem::change(direction);
+        renderValue();
+        activate();
+    };
 };
-
 
 ///
 /// Globals
 ///
 // number of menu screens: outlets + clock + servo
 #define N_SCREENS (N_OUTLETS + 2)
+
 extern Screen *screens[N_SCREENS];
 extern Menu menu;
 

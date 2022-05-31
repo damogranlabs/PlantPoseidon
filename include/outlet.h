@@ -10,7 +10,7 @@
 #define N_OUTLETS 8
 
 // defaults for fresh EEPROMs
-#define O_TIME_DEFAULT 19 // hour of day
+#define O_TIME_DEFAULT 19     // hour of day
 #define O_INTERVAL_DEFAULT 24 // hours
 #define O_DURATION_DEFAULT 10 // seconds
 
@@ -18,7 +18,8 @@
 /// Class definitions and whatnot
 ///
 // pumping schedule data
-struct schedule_data {
+struct schedule_data
+{
     bool enabled;
     int interval;
     int time;
@@ -29,13 +30,11 @@ class Outlet
 {
 public:
     Outlet(int id);
-    int getId(void){ return id; };
+    int getId(void) { return id; };
 
     // schedule
-    schedule_data *getSchedule(void){ return &schedule; };
+    schedule_data *getSchedule(void) { return &schedule; };
     bool updateSchedule(bool enabled, int time, int interval, int duration);
-
-    //
 
     // EEPROM
     void load(void);
@@ -47,12 +46,11 @@ public:
 
 private:
     int id;
-    int angle; // plate position when opened
+    int angle;   // plate position when opened
     int address; // EEPROM
-    
+
     // schedule and task managing
     schedule_data schedule;
-
 };
 
 ///
