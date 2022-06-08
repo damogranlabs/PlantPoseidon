@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #include "display.h"
-#include "menu.h"
+#include "ui/menu.h"
 #include "util.h"
 
 Item::Item(const char *l, int r, int c, int v)
@@ -142,64 +142,8 @@ void ChoiceItem::change(int direction){
     }
 
     // change index
-    i_choice += direction;
-    // wrap around?
-    if(i_choice < 0) i_choice = n_choices - 1;
-    else if(i_choice >= n_choices) i_choice = 0;
-
+    i_choice = contain(i_choice + direction, 0, n_choices - 1);
+    
     // change value
     value = pgm_read_word_near(choices + i_choice);
-}
-
-void IntervalItem::renderValue(void){
-    clear();
-    lcd.setCursor(column + l_label + 1, line);
-    l_value = 0;
-
-    int days, weeks;
-    int number;
-    const char *unit;
-    
-    // TODO: move to globals
-    static const char h[] PROGMEM = "ur";
-    static const char d[] PROGMEM = "dni";
-    static const char t1[] PROGMEM = "teden";
-    static const char t2[] PROGMEM = "tedna";
-    static const char t3[] PROGMEM = "tedne";
-
-    days = value / 24;
-    weeks = days / 7;
-
-    if(weeks > 0){
-        number = weeks;
-        if(number > 2) unit = t3;
-        else if(number > 1) unit = t2;
-        else unit = t1;
-    }
-    else if(days > 1){
-        number = days;
-        unit = d;
-    }
-    else{
-        number = value;
-        unit = h;
-    }
-
-    l_value = lcd.print(number);
-    l_value += pgm_to_lcd(line, column + l_label + 1 + l_value, unit);
-};
-
-void DurationItem::renderValue(void){
-    clear();
-    lcd.setCursor(column + l_label + 1, line);
-    l_value = 0;
-
-    if(value < 120){
-        l_value += lcd.print(value);
-        l_value += lcd.print('s');
-    }
-    else{
-        l_value += lcd.print(value/60);
-        l_value += lcd.print(F("min"));
-    }
 }

@@ -19,5 +19,6 @@ int pgm_table_to_lcd(int line, int column, const char * const *table, int i_entr
 ///
 int getDigitCount(int value);
 unsigned long crc(uint8_t *data, int size);
+int contain(int value, int min, int max);
 
 #endif

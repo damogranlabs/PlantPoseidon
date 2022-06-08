@@ -92,3 +92,9 @@ unsigned long crc(uint8_t *data, int size){
 
     return crc;
 }
+
+int contain(int value, int min, int max){
+    if(value > max) return min;
+    if(value < min) return max;
+    return value;
+}

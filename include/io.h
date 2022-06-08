@@ -13,7 +13,7 @@ void setup_i2c(void);
 void setup_gpio(void);
 void setup_enc(void);
 
-void update_btn_states(void);
+void update_inputs(void);
 
 void on_btn_flood_stop_click(void);
 void on_btn_next_click(void);
