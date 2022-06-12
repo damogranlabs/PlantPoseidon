@@ -80,6 +80,6 @@ public:
 ///
 /// Globals
 ///
-extern SettingsMenu settings;
+extern SettingsMenu settings_menu;
 
 #endif

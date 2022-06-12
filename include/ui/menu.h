@@ -25,9 +25,11 @@ public:
     virtual void begin(void) = 0;
 
     // button press events
-    void go(void); // enter/quit the menu
+    void toggle(void); // enter/quit the menu
     void navigate(int direction);
     void change(int direction);
+
+    bool is_active(void){ return i_active >= 0; };
 protected:
     int n_screens{};
     Screen **screens;

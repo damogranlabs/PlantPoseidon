@@ -3,6 +3,10 @@
 
 #include "outlet.h"
 #include "util.h"
+#include "fervo.h"
+
+// TODO: remove
+#include "display.h"
 
 ///
 /// Methods and all
@@ -10,7 +14,7 @@
 Outlet::Outlet(int outlet_id)
 {
     id = outlet_id;
-    angle = id * 360 / N_OUTLETS;
+
     // schedule + CRC
     address = (sizeof(schedule) + sizeof(unsigned long)) * id;
 
@@ -55,16 +59,20 @@ void Outlet::save(void)
     EEPROM.put(address + sizeof(schedule), check);
 }
 
-void Outlet::open(void)
-{
-    // turn the plate and start the pump/open the valve
-    digitalWrite(13, HIGH);
-}
+void Outlet::open(unsigned long duration){
+    // turn the plate
+    servo.easeMove(outlet_to_angle(id));
 
-void Outlet::close(void)
-{
-    // turn off the pump/close the valve
-    digitalWrite(13, LOW);
+    // open the falve
+    lcd.setCursor(19, 0);
+    lcd.print("O");
+
+    // if the stop button is pressed during opening time, ...
+    // ... stop
+    delay(duration);
+
+    lcd.setCursor(19, 0);
+    lcd.print(" ");
 }
 
 ///

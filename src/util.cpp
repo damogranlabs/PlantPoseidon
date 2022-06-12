@@ -2,6 +2,8 @@
 
 #include "util.h"
 #include "display.h"
+#include "fervo.h"
+#include "outlet.h"
 
 ///
 /// PROGMEM stuff
@@ -97,4 +99,15 @@ int contain(int value, int min, int max){
     if(value > max) return min;
     if(value < min) return max;
     return value;
+}
+
+int outlet_to_angle(int i_outlet){
+    // this should represent approximately 180 degrees
+    int servo_range = servo.getMax() - servo.getMin();
+    int delta_outlet = 2*servo_range/N_OUTLETS;
+    
+    int pos_outlet = servo.getZero() + i_outlet*delta_outlet;
+    if(pos_outlet > servo.getMax()) pos_outlet -= servo_range + delta_outlet/2;
+
+    return pos_outlet;
 }

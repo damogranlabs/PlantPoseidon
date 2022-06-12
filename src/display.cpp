@@ -66,6 +66,7 @@ unsigned char bool_off[8] = {
 ///
 /// Menu texts
 ///
+extern const char outlet_label[] PROGMEM = "Teglc";
 const char active_label[] PROGMEM = "Vklop";
 
 // interval in hours

@@ -8,14 +8,23 @@
 ///
 class FloodMenu : public Menu
 {
-    // TODO
-//public:
-//  FloodMenu();
+public:
+    void begin(void);
+};
+
+class FloodScreen : public Screen
+{
+public:
+    FloodScreen();
+    
+    void show(bool forward);
+    virtual void change(int direction);
+    void save(void){ /* nothing to save */ };
 };
 
 ///
 /// Globals
 ///
-// FloodMenu flood;
+extern FloodMenu flood_menu;
 
 #endif

@@ -17,20 +17,17 @@ OneButton btn_prev(BTN_PREV_PIN);
 
 Encoder enc(ENC_B_PIN, ENC_A_PIN);
 
-void setup_serial(void)
-{
+void setup_serial(void){
     Serial.begin(9600);
     while (!Serial)
         ;
 }
 
-void setup_i2c(void)
-{
+void setup_i2c(void){
     Wire.begin();
 }
 
-void setup_gpio(void)
-{
+void setup_gpio(void){
     pinMode(LED_BUILTIN, OUTPUT);
 
     btn_flood_stop.attachClick(on_btn_flood_stop_click);
@@ -39,14 +36,12 @@ void setup_gpio(void)
     btn_prev.attachClick(on_btn_prev_click);
 }
 
-void setup_enc(void)
-{
+void setup_enc(void){
     pinMode(ENC_A_PIN, INPUT_PULLUP);
     pinMode(ENC_B_PIN, INPUT_PULLUP);
 }
 
-void update_inputs(void)
-{
+void update_inputs(void){
     // buttons
     btn_flood_stop.tick();
     btn_next.tick();
@@ -54,31 +49,32 @@ void update_inputs(void)
     btn_prev.tick();
 
     // encoder
-    static int e_this, e_prev = 0;
+    static int e_this, e_prev = 0, direction;
     e_this = enc.read() / 4;
     if(e_this != e_prev){
-        settings.change((e_this - e_prev)/abs(e_this - e_prev));
+        direction = (e_this - e_prev)/abs(e_this - e_prev);
         e_prev = e_this;
+        
+        // TODO: do something with all that if()ing
+        if(settings_menu.is_active()) settings_menu.change(direction);
+        else if(flood_menu.is_active()) flood_menu.change(direction);
     }
 }
 
-void on_btn_flood_stop_click(void)
-{
-    lcd.setCursor(19, 3);
-    lcd.print("F");
+void on_btn_flood_stop_click(void){
+    if(!settings_menu.is_active()) flood_menu.toggle();
 }
 
-void on_btn_next_click(void)
-{
-    settings.navigate(1);
+void on_btn_next_click(void){
+    if(settings_menu.is_active()) settings_menu.navigate(1);
+    else if(flood_menu.is_active()) flood_menu.navigate(1);
 }
 
-void on_btn_setup_click(void)
-{
-    settings.go();
+void on_btn_setup_click(void){
+    if(!flood_menu.is_active()) settings_menu.toggle();
 }
 
-void on_btn_prev_click(void)
-{
-    settings.navigate(-1);
+void on_btn_prev_click(void){
+    if(settings_menu.is_active()) settings_menu.navigate(-1);
+    else if(flood_menu.is_active()) flood_menu.navigate(-1);
 }

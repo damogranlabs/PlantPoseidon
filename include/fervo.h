@@ -8,10 +8,12 @@
 /// Settings
 ///
 #define SERVO_T_MOVE 3000  // max easing time (180 degrees, less is scaled)
-#define SERVO_ADDRESS 1024 // EEPROM
+#define SERVO_ADDRESS 128 // EEPROM
 
+// default values; these should be standard but no one cares
+// so they can be modified by the user
 #define SERVO_MAX 2300 // maximum pulse width that still turns the shaft
-#define SERVO_MIN 700  // and minimum; these should be standard but no one cares
+#define SERVO_MIN 700  // and minimum; 
 
 ///
 /// Class definitions

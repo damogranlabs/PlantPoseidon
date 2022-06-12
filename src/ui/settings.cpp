@@ -44,7 +44,8 @@ OutletScreen::OutletScreen(Outlet *o)
 void OutletScreen::show(bool forward)
 {
     lcd.setCursor(0, 0);
-    lcd.print(F("Teglc "));
+    pgm_to_lcd(0, 0, outlet_label);
+    lcd.print(' ');
     lcd.print(outlet->getId() + 1);
 
     Screen::show(forward);
@@ -177,4 +178,4 @@ void DurationItem::renderValue(void){
 ///
 /// Globals
 ///
-SettingsMenu settings;
+SettingsMenu settings_menu;

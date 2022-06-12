@@ -22,6 +22,7 @@ extern unsigned char arrow_right[8];
 extern unsigned char bool_on[8];
 extern unsigned char bool_off[8];
 
+extern const char outlet_label[] PROGMEM;
 extern const char active_label[] PROGMEM;
 extern const char interval_label[] PROGMEM;
 extern const int intervals[] PROGMEM;

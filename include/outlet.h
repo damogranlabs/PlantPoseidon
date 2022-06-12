@@ -41,12 +41,10 @@ public:
     void save(void);
 
     // valve steering
-    void open(void);
-    void close(void);
+    void open(unsigned long duration);
 
 private:
     int id;
-    int angle;   // plate position when opened
     int address; // EEPROM
 
     // schedule and task managing

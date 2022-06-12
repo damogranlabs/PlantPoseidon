@@ -6,6 +6,9 @@
 #include "fervo.h"
 #include "util.h"
 
+// TODO: un-include
+#include "display.h"
+
 ///
 /// Methods and all
 ///
@@ -68,17 +71,22 @@ void Fervo::easeMove(int new_angle)
         return;
 
     unsigned long t_start = millis();
-    unsigned long delta_t = SERVO_T_MOVE * abs(delta_angle) / (data.max - data.min);
+    // the abs(x) macro is written in Arduino.h for Uno but Nano Every uses
+    // __builtin_abs() from stdlib, which has been improved to not work properly.
+    //unsigned long delta_t = SERVO_T_MOVE * abs(delta_angle) / (data.max - data.min);
+    // it seems that for long integers, the function of choice is 'labs', which is like totally intuitive.
+    // alas, there is no 'dabs' for doubles and 'fabs' for floats.
+#define arduino_abs(x) ((x)>0?(x):-(x))
+    unsigned long delta_t = SERVO_T_MOVE * labs(delta_angle) / (data.max - data.min);    
     unsigned long t_end = t_start + delta_t;
     unsigned long t_now = t_start;
 
-    // subdivisions: linear interpolation between tabulated points,
+    // subdivisions: linear interpolation between tabulated points
     unsigned int i_left, i_right;
     unsigned long t_left, dt = delta_t / N_SAMPLES;
     int r;
 
-    while (t_now < t_end)
-    {
+    while (t_now < t_end){
         t_now = millis();
 
         i_left = (t_now - t_start) / dt;
@@ -100,5 +108,5 @@ Fervo servo;
 void setup_servo(void)
 {
     servo.attach(SERV1_PIN);
-    // servo.write(90); //TODO
+    servo.write(90);
 }

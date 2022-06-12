@@ -18,11 +18,13 @@ void setup_outlets(void){
 }
 
 void setup_menus(void){
-    settings.begin();
+    settings_menu.begin();
+    flood_menu.begin();
 }
 
 void setup()
 {
+    setup_serial();
     setup_i2c();
     setup_lcd();
     setup_gpio();
@@ -39,11 +41,18 @@ void setup()
 void loop()
 {
     update_inputs();
+
+    // currently dealing with menus?
+    if(flood_menu.is_active()) return;
+    if(settings_menu.is_active()) return;
+
+    // show status
     lcd.setCursor(0, 0);
     lcd.print(millis() / 1000);
 
-    /*
     // check if there's anything to water
+    
+    /*
 
 
     servo.easeMove(0);
