@@ -34,7 +34,7 @@ public:
     ClockScreen();
 
     void show(bool end_first);
-    void save(void){};
+    void save(void);
 };
 
 class ServoScreen : public Screen

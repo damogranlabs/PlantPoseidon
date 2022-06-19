@@ -2,6 +2,7 @@
 
 #include "pinout.h"
 #include "display.h"
+#include "time.h"
 
 // hd44780_I2Cexp lcd(addr, chiptype,       rs,[rw],en,d4,d5,d6,d7,bl,blLevel);
 hd44780_I2Cexp lcd(LCD_ADD,
@@ -66,7 +67,7 @@ unsigned char bool_off[8] = {
 ///
 /// Menu texts
 ///
-extern const char outlet_label[] PROGMEM = "Teglc";
+const char outlet_label[] PROGMEM = "Teglc";
 const char active_label[] PROGMEM = "Vklop";
 
 // interval in hours
@@ -93,16 +94,41 @@ const char servo_min_label[] PROGMEM = "Min. kot";
 const char servo_max_label[] PROGMEM = "Max. kot";
 const char servo_zero_label[] PROGMEM = "Pozicija #1";
 
-void setup_lcd(void)
-{
+void setup_lcd(void){
     lcd.begin(LCD_X_SIZE, LCD_Y_SIZE);
-    lcd.noBacklight();
     lcd.setCursor(0, 0);
-
-    lcd.backlight();
+    
     lcd.clear();
     lcd.createChar(CC_LEFT, arrow_left);
     lcd.createChar(CC_RIGHT, arrow_right);
     lcd.createChar(CC_ON, bool_on);
     lcd.createChar(CC_OFF, bool_off);
+
+    lcd.backlight(); // handle separately
+    t_backlight = millis();
+}
+
+unsigned long t_backlight;
+
+void touch(void){
+    t_backlight = millis();
+    lcd.backlight();
+}
+
+void update_backlight(void){
+    // TODO TODO: check power consumption/7805 temperature
+    if(millis() - t_backlight > LCD_BACKLIGHT_TIMEOUT){
+        lcd.noBacklight();
+    }
+}
+
+void show_status(void){
+    static unsigned long t_updated = millis();
+    
+    if(millis() - t_updated > 1000){
+        t_updated = millis();
+
+        print_date(0, 0);
+        print_time(0, 15);
+    }
 }

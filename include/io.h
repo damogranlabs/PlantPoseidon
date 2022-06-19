@@ -21,9 +21,9 @@ void on_btn_setup_click(void);
 void on_btn_prev_click(void);
 
 extern OneButton btn_flood_stop;
-extern OneButton btn_flood_stop;
-extern OneButton btn_flood_stop;
-extern OneButton btn_flood_stop;
+extern OneButton btn_next;
+extern OneButton btn_setup;
+extern OneButton btn_prev;
 
 extern Encoder enc;
 

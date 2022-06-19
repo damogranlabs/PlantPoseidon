@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 
+#include "pinout.h"
 #include "outlet.h"
 #include "util.h"
 #include "fervo.h"
@@ -68,8 +69,11 @@ void Outlet::open(unsigned long duration){
     lcd.print("O");
 
     // if the stop button is pressed during opening time, ...
-    // ... stop
-    delay(duration);
+    unsigned long t_end = millis() + duration;
+    while(millis() < t_end){
+        // ... stop
+        if(digitalRead(BTN_FLOOD_PIN) == LOW) break;
+    }
 
     lcd.setCursor(19, 0);
     lcd.print(" ");

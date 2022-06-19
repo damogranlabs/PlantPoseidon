@@ -52,6 +52,8 @@ void update_inputs(void){
     static int e_this, e_prev = 0, direction;
     e_this = enc.read() / 4;
     if(e_this != e_prev){
+        touch();
+
         direction = (e_this - e_prev)/abs(e_this - e_prev);
         e_prev = e_this;
         
@@ -62,19 +64,27 @@ void update_inputs(void){
 }
 
 void on_btn_flood_stop_click(void){
+    touch();
+
     if(!settings_menu.is_active()) flood_menu.toggle();
 }
 
 void on_btn_next_click(void){
+    touch();
+
     if(settings_menu.is_active()) settings_menu.navigate(1);
     else if(flood_menu.is_active()) flood_menu.navigate(1);
 }
 
 void on_btn_setup_click(void){
+    touch();
+
     if(!flood_menu.is_active()) settings_menu.toggle();
 }
 
 void on_btn_prev_click(void){
+    touch();
+    
     if(settings_menu.is_active()) settings_menu.navigate(-1);
     else if(flood_menu.is_active()) flood_menu.navigate(-1);
 }

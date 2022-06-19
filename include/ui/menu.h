@@ -8,6 +8,8 @@
 
 #include "outlet.h"
 
+#define MENU_TIMEOUT 15000
+
 class Menu; // a container/handler for Screens
     class Screen; // a container for Items
         class Item; // generic numeric value
@@ -25,11 +27,12 @@ public:
     virtual void begin(void) = 0;
 
     // button press events
+    void enter(void);
+    void quit(void);
+    bool is_active(void); // check/timeout
     void toggle(void); // enter/quit the menu
     void navigate(int direction);
     void change(int direction);
-
-    bool is_active(void){ return i_active >= 0; };
 protected:
     int n_screens{};
     Screen **screens;

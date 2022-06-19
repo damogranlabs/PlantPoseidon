@@ -1,6 +1,6 @@
 #include "ui/menu.h"
 #include "ui/settings.h"
-
+#include "time.h"
 #include "display.h"
 #include "outlet.h"
 #include "fervo.h"
@@ -82,7 +82,29 @@ void ClockScreen::show(bool forward)
     lcd.setCursor(0, 0);
     lcd.print(F("Ura in datum"));
 
+    if(!ds1338_read_time(&time)){
+        items[0]->setValue(time.hour);
+        items[1]->setValue(time.minute);
+
+        items[2]->setValue(time.day);
+        items[3]->setValue(time.month);
+        items[4]->setValue(time.year + 2000);
+    }
+    
     Screen::show(forward);
+}
+
+void ClockScreen::save(void){
+    make_time(
+        &time,
+        items[4]->getValue() - 2000, // year
+        items[3]->getValue(), // month
+        items[2]->getValue(), // day
+        items[0]->getValue(), // hour
+        items[1]->getValue(), // minute
+        0 // second
+    );
+    ds1338_write_time(&time);
 }
 
 /************** Servo screen **************/

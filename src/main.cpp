@@ -4,6 +4,7 @@
 #include "pinout.h"
 #include "io.h"
 #include "display.h"
+#include "time.h"
 #include "outlet.h"
 #include "fervo.h"
 #include "ui/settings.h"
@@ -11,8 +12,7 @@
 #include "util.h"
 
 void setup_outlets(void){
-    for (int i = 0; i < N_OUTLETS; i++)
-    {
+    for (int i = 0; i < N_OUTLETS; i++){
         outlets[i] = new Outlet(i);
     }
 }
@@ -28,42 +28,26 @@ void setup()
     setup_i2c();
     setup_lcd();
     setup_gpio();
+    setup_rtc();
     setup_enc();
     setup_servo();
     setup_outlets();
     setup_menus();
 
-    lcd.print("System initialized.");
-    delay(1000);
+    lcd.print(F("Bohdej, Kmet"));
+    delay(3000);
     lcd.clear();
 }
 
-void loop()
-{
+void loop(){
     update_inputs();
+    update_backlight();
+    show_status();
 
     // currently dealing with menus?
     if(flood_menu.is_active()) return;
     if(settings_menu.is_active()) return;
 
-    // show status
-    lcd.setCursor(0, 0);
-    lcd.print(millis() / 1000);
-
     // check if there's anything to water
     
-    /*
-
-
-    servo.easeMove(0);
-    delay(1000);
-    servo.easeMove(22);
-    delay(1000);
-    servo.easeMove(45);
-    delay(1000);
-    servo.easeMove(90);
-    delay(1000);
-    servo.easeMove(180);
-    delay(1000);
-    */
 }
