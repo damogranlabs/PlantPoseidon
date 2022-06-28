@@ -2,7 +2,8 @@
 
 #include "pinout.h"
 #include "display.h"
-#include "time.h"
+#include "schedule.h"
+#include "util.h"
 
 // hd44780_I2Cexp lcd(addr, chiptype,       rs,[rw],en,d4,d5,d6,d7,bl,blLevel);
 hd44780_I2Cexp lcd(LCD_ADD,
@@ -73,9 +74,9 @@ const char active_label[] PROGMEM = "Vklop";
 // interval in hours
 const char interval_label[] PROGMEM = "Zalij na";
 const int intervals[] PROGMEM = {
-    12, 24, 2 * 24, 3 * 24, 4 * 24, 5 * 24, 6 * 24, // 0.5, 1, 2, 3, 4, 5, 6 days
-    7 * 24, 2 * 7 * 24, 3 * 7 * 24, 4 * 7 * 24,     // 1, 2, 3, 4 weeks
-    -1                                              // end
+    12, 24, 2*24, 3*24, 4*24, 5*24, 6*24, // 0.5, 1, 2, 3, 4, 5, 6 days
+    7*24, 2*7*24, 3*7*24, 4*7*24,         // 1, 2, 3, 4 weeks
+    -1                                    // end
 };
 
 // valve open duration in seconds
@@ -122,13 +123,51 @@ void update_backlight(void){
     }
 }
 
+void substr_to_lcd(char *str, int start, int end){
+    for(int i = start; i < end; i++){
+        lcd.print(str[i]);
+    }
+}
+
 void show_status(void){
     static unsigned long t_updated = millis();
+    static char buf[20];
     
     if(millis() - t_updated > 1000){
         t_updated = millis();
 
-        print_date(0, 0);
-        print_time(0, 15);
+        if(ds1338_read_time(&rtc_time) != 0){
+            showI2CError();
+            return;
+        }
+
+        // format_time_str prints:
+        // 0123456789012345678
+        // 2022-06-19T13:58:11
+        format_time_str(&rtc_time, buf);
+        lcd.setCursor(0, 1);
+        lcd.print(buf);
+
+        // print:
+        // 13:59
+        lcd.setCursor(15, 0);
+        substr_to_lcd(buf, 11, 13);
+        
+        //every other second has no ':' mark
+        lcd.setCursor(15+2, 0);
+        if(rtc_time.second % 2 != 0) lcd.print(' ');
+        else lcd.print(':');
+
+        lcd.setCursor(15+3, 0);
+        substr_to_lcd(buf, 14, 16);
+
+        // print:
+        // 21.09.2022
+        lcd.setCursor(0, 0);
+        substr_to_lcd(buf, 8, 10);
+        lcd.print('.');
+        substr_to_lcd(buf, 5, 7);
+        lcd.print('.');
+        substr_to_lcd(buf, 0, 4);
     }
 }

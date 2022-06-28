@@ -4,7 +4,7 @@
 #include "pinout.h"
 #include "io.h"
 #include "display.h"
-#include "time.h"
+#include "schedule.h"
 #include "outlet.h"
 #include "fervo.h"
 #include "ui/settings.h"
@@ -40,14 +40,20 @@ void setup()
 }
 
 void loop(){
+    static int i;
+
     update_inputs();
     update_backlight();
-    show_status();
 
     // currently dealing with menus?
     if(flood_menu.is_active()) return;
     if(settings_menu.is_active()) return;
 
     // check if there's anything to water
-    
+    for(i = 0; i < N_OUTLETS; i++){
+        outlets[i]->check();
+    }
+
+    // nothing else to do: show status
+    show_status();
 }

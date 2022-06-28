@@ -15,7 +15,7 @@
 #define LCD_ADD 0x27
 #define LCD_X_SIZE 20
 #define LCD_Y_SIZE 4
-#define LCD_BACKLIGHT_TIMEOUT 5000
+#define LCD_BACKLIGHT_TIMEOUT 10000
 
 // Menu texts
 extern unsigned char arrow_left[8];

@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#include "schedule.h"
+
 ///
 /// Settings/defaults
 ///
@@ -18,14 +20,6 @@
 /// Class definitions and whatnot
 ///
 // pumping schedule data
-struct schedule_data
-{
-    bool enabled;
-    int interval;
-    int time;
-    int duration;
-};
-
 class Outlet
 {
 public:
@@ -41,14 +35,18 @@ public:
     void save(void);
 
     // valve steering
-    void open(unsigned long duration);
+    bool check(void); // open on schedule
+    void flood(unsigned long duration); // or open from the flood menu
+    
 
 private:
     int id;
-    int address; // EEPROM
+    unsigned int address; // EEPROM
 
     // schedule and task managing
-    schedule_data schedule;
+    struct schedule_data schedule;
+    bool pastDue(void);
+    void open(unsigned long duration, bool log);
 };
 
 ///

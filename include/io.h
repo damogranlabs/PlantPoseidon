@@ -3,9 +3,7 @@
 
 #include <Arduino.h>
 #include <Print.h>
-
 #include <OneButton.h>
-
 #include <Encoder.h>
 
 void setup_serial(void);

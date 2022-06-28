@@ -1,6 +1,6 @@
 #include "ui/menu.h"
 #include "ui/settings.h"
-#include "time.h"
+#include "schedule.h"
 #include "display.h"
 #include "outlet.h"
 #include "fervo.h"
@@ -44,7 +44,7 @@ OutletScreen::OutletScreen(Outlet *o)
 void OutletScreen::show(bool forward)
 {
     lcd.setCursor(0, 0);
-    pgm_to_lcd(0, 0, outlet_label);
+    pgmToLcd(0, 0, outlet_label);
     lcd.print(' ');
     lcd.print(outlet->getId() + 1);
 
@@ -74,7 +74,7 @@ ClockScreen::ClockScreen(void)
     // day, month, year
     items[2] = new Item(NULL, 2, 1, 1, true, (char)0, 1, 31);
     items[3] = new Item(date_point, 2, 5, 1, true, (char)0, 1, 12);
-    items[4] = new Item(date_point, 2, 10, 2022, false, (char)0, 2022, 2122);
+    items[4] = new Item(date_point, 2, 10, 2022, false, (char)0, 2022, 2099);
 }
 
 void ClockScreen::show(bool forward)
@@ -82,29 +82,35 @@ void ClockScreen::show(bool forward)
     lcd.setCursor(0, 0);
     lcd.print(F("Ura in datum"));
 
-    if(!ds1338_read_time(&time)){
-        items[0]->setValue(time.hour);
-        items[1]->setValue(time.minute);
+    if(ds1338_read_time(&rtc_time) == 0){
+        items[0]->setValue(rtc_time.hour);
+        items[1]->setValue(rtc_time.minute);
 
-        items[2]->setValue(time.day);
-        items[3]->setValue(time.month);
-        items[4]->setValue(time.year + 2000);
+        items[2]->setValue(rtc_time.day);
+        items[3]->setValue(rtc_time.month);
+        items[4]->setValue(rtc_time.year + 2000);
     }
+    else showI2CError();
     
     Screen::show(forward);
 }
 
 void ClockScreen::save(void){
+    // TODO: check invalid dates
+    int year = items[4]->getValue();
+    int month = items[3]->getValue();
+    int day = items[2]->getValue();
+
     make_time(
-        &time,
-        items[4]->getValue() - 2000, // year
-        items[3]->getValue(), // month
-        items[2]->getValue(), // day
+        &rtc_time,
+        year - 2000,
+        month,
+        validateDay(year, month, day),
         items[0]->getValue(), // hour
         items[1]->getValue(), // minute
         0 // second
     );
-    ds1338_write_time(&time);
+    if(ds1338_write_time(&rtc_time) != 0) showI2CError();
 }
 
 /************** Servo screen **************/
@@ -178,7 +184,7 @@ void IntervalItem::renderValue(void){
     }
 
     l_value = lcd.print(number);
-    l_value += pgm_to_lcd(line, column + l_label + 1 + l_value, unit);
+    l_value += pgmToLcd(line, column + l_label + 1 + l_value, unit);
 };
 
 void DurationItem::renderValue(void){

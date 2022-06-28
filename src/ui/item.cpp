@@ -27,7 +27,7 @@ Item::Item(const char *l, int r, int c, int v,
 void Item::show(void){
     if(label){
         // display the label on the screen and store its length
-        l_label = pgm_to_lcd(line, column, label);
+        l_label = pgmToLcd(line, column, label);
 
         // a space between a label and current choice
         lcd.setCursor(column + l_label, line);

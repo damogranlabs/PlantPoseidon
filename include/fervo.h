@@ -7,7 +7,6 @@
 ///
 /// Settings
 ///
-#define SERVO_T_MOVE 3000  // max easing time (180 degrees, less is scaled)
 #define SERVO_ADDRESS 128 // EEPROM
 
 // default values; these should be standard but no one cares
@@ -55,5 +54,7 @@ private:
 extern Fervo servo;
 
 void setup_servo(void);
+
+int outletToAngle(int i_outlet);
 
 #endif

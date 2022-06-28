@@ -2,8 +2,8 @@
 
 #include "util.h"
 #include "display.h"
-#include "fervo.h"
 #include "outlet.h"
+#include "schedule.h"
 
 ///
 /// PROGMEM stuff
@@ -11,7 +11,7 @@
 
 char pgm_buffer[STR_BUFSIZE];
 
-char *pgm_to_buffer(const char *text){
+char *pgmToBuffer(const char *text){
     // copies a PROGMEMed string pgm::buffer, returning pointer to it
     memset(pgm_buffer, 0, STR_BUFSIZE);
 
@@ -26,7 +26,7 @@ char *pgm_to_buffer(const char *text){
     return pgm_buffer;
 }
 
-int pgm_to_lcd(int line, int column, const char *text){
+int pgmToLcd(int line, int column, const char *text){
     // reads a string from PROGMEM and outputs it directly to LiquidCrystal,
     // skipping buffering
     char c;
@@ -41,7 +41,7 @@ int pgm_to_lcd(int line, int column, const char *text){
     return i;
 }
 
-char *pgm_table_to_buffer(const char *const *table, int i_entry){
+char *pgmTableToBuffer(const char *const *table, int i_entry){
     // copies an entry from a string table stored in PROGMEM to pgm::buffer, returning pointer to it
     memset(pgm_buffer, 0, STR_BUFSIZE);
     strncpy_P(pgm_buffer, (char*)pgm_read_word(&(table[i_entry])), STR_BUFSIZE-1);
@@ -49,7 +49,7 @@ char *pgm_table_to_buffer(const char *const *table, int i_entry){
     return pgm_buffer;
 }
 
-int pgm_table_to_lcd(int line, int column, const char * const *table, int i_entry){
+int pgmTableToLcd(int line, int column, const char * const *table, int i_entry){
     // reads an entry from a string table stored in PROGMEM
     // https://www.arduino.cc/reference/en/language/variables/utilities/progmem/
     memset(pgm_buffer, 0, STR_BUFSIZE);
@@ -64,6 +64,11 @@ int pgm_table_to_lcd(int line, int column, const char * const *table, int i_entr
 ///
 /// Misc
 ///
+void showI2CError(void){
+    lcd.setCursor(17, 3);
+    lcd.print(F("I2C"));
+}
+
 int getDigitCount(int value){
     int digits = 0, remainder = value;
 
@@ -99,15 +104,4 @@ int contain(int value, int min, int max){
     if(value > max) return min;
     if(value < min) return max;
     return value;
-}
-
-int outlet_to_angle(int i_outlet){
-    // this should represent approximately 180 degrees
-    int servo_range = servo.getMax() - servo.getMin();
-    int delta_outlet = 2*servo_range/N_OUTLETS;
-    
-    int pos_outlet = servo.getZero() + i_outlet*delta_outlet;
-    if(pos_outlet > servo.getMax()) pos_outlet -= servo_range + delta_outlet/2;
-
-    return pos_outlet;
 }

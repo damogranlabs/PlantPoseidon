@@ -39,7 +39,7 @@ void FloodScreen::change(int direction){
     if(i_item == 2){
         if(items[2]->getValue() > 0){
             // the value in in ms
-            outlets[items[0]->getValue() - 1]->open((unsigned long)items[1]->getValue()*1000);
+            outlets[items[0]->getValue() - 1]->flood((unsigned long)items[1]->getValue());
         }
 
         // make the item inactive again
