@@ -1,9 +1,6 @@
 #include <Arduino.h>
 
 #include "util.h"
-#include "display.h"
-#include "outlet.h"
-#include "schedule.h"
 
 ///
 /// PROGMEM stuff
@@ -26,20 +23,20 @@ char *pgmToBuffer(const char *text){
     return pgm_buffer;
 }
 
-int pgmToLcd(int line, int column, const char *text){
-    // reads a string from PROGMEM and outputs it directly to LiquidCrystal,
-    // skipping buffering
-    char c;
-    unsigned int i;
+// int pgmToLcd(int line, int column, const char *text){
+//     // reads a string from PROGMEM and outputs it directly to LiquidCrystal,
+//     // skipping buffering
+//     char c;
+//     unsigned int i;
 
-    for(i = 0; i < strlen_P(text); i++){
-        c = pgm_read_byte_near(text + i);
-        lcd.setCursor(column + i, line);
-        lcd.print(c);
-    }
+//     for(i = 0; i < strlen_P(text); i++){
+//         c = pgm_read_byte_near(text + i);
+//         lcd.setCursor(column + i, line);
+//         lcd.print(c);
+//     }
 
-    return i;
-}
+//     return i;
+// }
 
 char *pgmTableToBuffer(const char *const *table, int i_entry){
     // copies an entry from a string table stored in PROGMEM to pgm::buffer, returning pointer to it
@@ -49,25 +46,25 @@ char *pgmTableToBuffer(const char *const *table, int i_entry){
     return pgm_buffer;
 }
 
-int pgmTableToLcd(int line, int column, const char * const *table, int i_entry){
-    // reads an entry from a string table stored in PROGMEM
-    // https://www.arduino.cc/reference/en/language/variables/utilities/progmem/
-    memset(pgm_buffer, 0, STR_BUFSIZE);
+// int pgmTableToLcd(int line, int column, const char * const *table, int i_entry){
+//     // reads an entry from a string table stored in PROGMEM
+//     // https://www.arduino.cc/reference/en/language/variables/utilities/progmem/
+//     memset(pgm_buffer, 0, STR_BUFSIZE);
 
-    strncpy_P(pgm_buffer, (char*)pgm_read_word(&(table[i_entry])), STR_BUFSIZE-1);
-    lcd.setCursor(column, line);
-    lcd.print(pgm_buffer);
+//     strncpy_P(pgm_buffer, (char*)pgm_read_word(&(table[i_entry])), STR_BUFSIZE-1);
+//     lcd.setCursor(column, line);
+//     lcd.print(pgm_buffer);
 
-    return strlen(pgm_buffer);
-}
+//     return strlen(pgm_buffer);
+// }
 
 ///
 /// Misc
 ///
-void showI2CError(void){
-    lcd.setCursor(17, 3);
-    lcd.print(F("I2C"));
-}
+// void showI2CError(void){
+//     lcd.setCursor(17, 3);
+//     lcd.print(F("I2C"));
+// }
 
 int getDigitCount(int value){
     int digits = 0, remainder = value;

@@ -7,6 +7,8 @@
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_I2Cexp.h>
 
+#define I2CLCD hd44780_I2Cexp
+
 #define CC_LEFT 0
 #define CC_RIGHT 1
 #define CC_ON 2
@@ -39,15 +41,14 @@ extern const char servo_min_label[] PROGMEM;
 extern const char servo_max_label[] PROGMEM;
 extern const char servo_zero_label[] PROGMEM;
 
-extern hd44780_I2Cexp lcd;
-void setup_lcd(void);
+void setup_lcd(I2CLCD *lcd);
 
 // backlight
-extern unsigned long t_backlight;
-void touch(void);
-void update_backlight(void);
+// extern unsigned long t_backlight;
+// void touch(void);
+// void update_backlight(void);
 
-// status
-void show_status(void);
+// // status
+// void show_status(void);
 
 #endif

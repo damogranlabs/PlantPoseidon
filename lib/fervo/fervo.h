@@ -48,13 +48,11 @@ private:
     servo_data data;
 };
 
-///
-/// Globals
-///
-extern Fervo servo;
+// ///
+// /// Globals
+// ///
+void setup_servo(Fervo *servo, int pin);
 
-void setup_servo(void);
-
-int outletToAngle(int i_outlet);
+// int outletToAngle(int i_outlet);
 
 #endif

@@ -1,24 +1,16 @@
-#include <Arduino.h>
-
-#include "DS1338.h"
-
-struct rtctime_t rtc_time;
-
-void setup_rtc(void){
-    ds1338_clean_osf();
-    ds1338_disable_sqw();
-}
+#include <inttypes.h>
+#include <math.h>
 
 ///
 /// Date/time
 ///
-bool isLeapYear(int year){
+bool isLeapYear(uint16_t year){
     if(year % 400 == 0) return true;
     if(year % 100 == 0) return false;
     return (year % 4 == 0);
 }
 
-int daysInMonth(int year, int month){
+uint8_t daysInMonth(uint16_t year, uint8_t month){
     switch(month){
         case 4:
         case 6:
@@ -35,7 +27,9 @@ int daysInMonth(int year, int month){
     return 31;
 }
 
-int validateDay(int year, int month, int day){
+uint8_t validateDay(uint16_t year, uint8_t month, uint8_t day){
     // clip the date for given month; returns a 'valid' 'day'
-    return min(day, daysInMonth(year, month));
+    uint8_t dmax = daysInMonth(year, month);
+    
+    return (day < dmax) ? day : dmax;
 }

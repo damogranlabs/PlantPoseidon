@@ -1,10 +1,7 @@
-#ifndef _TIME_H
-#define _TIME_H
+#ifndef _DATETIME_H
+#define _DATETIME_H
 
-#include "DS1338.h"
-
-extern struct rtctime_t rtc_time;
-void setup_rtc(void);
+#include <inttypes.h>
 
 struct schedule_data
 {
@@ -24,8 +21,10 @@ struct schedule_data
 ///
 /// Date and time
 ///
-bool isLeapYear(int year);
-int daysInMonth(int year, int month);
-int validateDay(int year, int month, int day);
+bool isLeapYear(uint16_t year);
+uint8_t daysInMonth(uint16_t year, uint8_t month);
+uint8_t validateDay(uint16_t year, uint8_t month, uint8_t day);
+
+
 
 #endif

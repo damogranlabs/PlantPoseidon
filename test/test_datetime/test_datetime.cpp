@@ -1,7 +1,6 @@
-#include <Arduino.h>
 #include <unity.h>
 
-#include <schedule.h>
+#include "datetime.h"
 
 void setUp(void)
 {
@@ -11,15 +10,6 @@ void setUp(void)
 void tearDown(void)
 {
   // clean stuff up here
-}
-
-void setup()
-{
-  // NOTE!!! Wait for >2 secs
-  // if board doesn't support software reset via Serial.DTR/RTS
-  delay(2000);
-
-  UNITY_BEGIN();
 }
 
 void test_leap_year(void){
@@ -58,10 +48,14 @@ void test_days_in_month(void){
     TEST_ASSERT_EQUAL_INT(daysInMonth(2000, 2), 29);
 }
 
-void loop(){
+int main(int argc, char **argv){
+    UNITY_BEGIN();
+  
     RUN_TEST(test_leap_year);
     RUN_TEST(test_days_in_month);
     RUN_TEST(test_validate_day);
 
     UNITY_END(); // stop unit testing
+
+    return 0;
 }

@@ -8,21 +8,18 @@
 
 void setup_serial(void);
 void setup_i2c(void);
-void setup_gpio(void);
+void setup_gpio(
+    OneButton *btn_setup,
+    OneButton *btn_flood_stop,
+    OneButton *btn_prev,
+    OneButton *btn_next);
 void setup_enc(void);
 
-void update_inputs(void);
+// void update_inputs(void);
 
-void on_btn_flood_stop_click(void);
-void on_btn_next_click(void);
-void on_btn_setup_click(void);
-void on_btn_prev_click(void);
-
-extern OneButton btn_flood_stop;
-extern OneButton btn_next;
-extern OneButton btn_setup;
-extern OneButton btn_prev;
-
-extern Encoder enc;
+// void on_btn_flood_stop_click(void);
+// void on_btn_next_click(void);
+// void on_btn_setup_click(void);
+// void on_btn_prev_click(void);
 
 #endif
