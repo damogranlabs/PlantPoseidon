@@ -5,19 +5,6 @@
 #include "schedule.h"
 #include "util.h"
 
-// hd44780_I2Cexp lcd(addr, chiptype,       rs,[rw],en,d4,d5,d6,d7,bl,blLevel);
-hd44780_I2Cexp lcd(LCD_ADD,
-                   I2Cexp_PCF8574,
-                   P_LCD_RS,
-                   P_LCD_RW,
-                   P_LCD_EN,
-                   P_LCD_D4,
-                   P_LCD_D5,
-                   P_LCD_D6,
-                   P_LCD_D7,
-                   P_LCD_BL,
-                   HIGH);
-
 ///
 /// Custom characters
 ///
@@ -95,41 +82,67 @@ const char servo_min_label[] PROGMEM = "Min. kot";
 const char servo_max_label[] PROGMEM = "Max. kot";
 const char servo_zero_label[] PROGMEM = "Pozicija #1";
 
-void setup_lcd(void){
-    lcd.begin(LCD_X_SIZE, LCD_Y_SIZE);
-    lcd.setCursor(0, 0);
+void I2CLCD::begin(void){
+    hd44780_I2Cexp::begin(LCD_X_SIZE, LCD_Y_SIZE);
+
+    setCursor(0, 0);
     
-    lcd.clear();
-    lcd.createChar(CC_LEFT, arrow_left);
-    lcd.createChar(CC_RIGHT, arrow_right);
-    lcd.createChar(CC_ON, bool_on);
-    lcd.createChar(CC_OFF, bool_off);
+    clear();
+    createChar(CC_LEFT, arrow_left);
+    createChar(CC_RIGHT, arrow_right);
+    createChar(CC_ON, bool_on);
+    createChar(CC_OFF, bool_off);
 
-    lcd.backlight(); // handle separately
+    backlight(); // handle separately
     t_backlight = millis();
 }
 
-unsigned long t_backlight;
-
-void touch(void){
+void I2CLCD::touch(void){
+    backlight();
     t_backlight = millis();
-    lcd.backlight();
 }
 
-void update_backlight(void){
+void I2CLCD::check(void){
     // TODO TODO: check power consumption/7805 temperature
     if(millis() - t_backlight > LCD_BACKLIGHT_TIMEOUT){
-        lcd.noBacklight();
+        noBacklight();
     }
 }
 
-void substr_to_lcd(char *str, int start, int end){
+int I2CLCD::printPgm(int line, int column, const char *text){
+    // reads a string from PROGMEM and outputs it directly to LiquidCrystal,
+    // skipping buffering
+    char c;
+    unsigned int i;
+
+    for(i = 0; i < strlen_P(text); i++){
+        c = pgm_read_byte_near(text + i);
+        setCursor(column + i, line);
+        print(c);
+    }
+
+    return i;
+}
+
+int I2CLCD::printPgmTable(int line, int column, const char * const *table, int i_entry){
+    // reads an entry from a string table stored in PROGMEM
+    // https://www.arduino.cc/reference/en/language/variables/utilities/progmem/
+    memset(pgm_buffer, 0, LCD_BUF_SIZE);
+
+    strncpy_P(pgm_buffer, (char*)pgm_read_word(&(table[i_entry])), LCD_BUF_SIZE-1);
+    setCursor(column, line);
+    print(pgm_buffer);
+
+    return strlen(pgm_buffer);
+}
+
+void I2CLCD::printSubstr(char *str, int start, int end){
     for(int i = start; i < end; i++){
-        lcd.print(str[i]);
+        print(str[i]);
     }
 }
 
-void show_status(void){
+void I2CLCD::showStatus(void){
     static unsigned long t_updated = millis();
     static char buf[20];
     
@@ -145,29 +158,34 @@ void show_status(void){
         // 0123456789012345678
         // 2022-06-19T13:58:11
         format_time_str(&rtc_time, buf);
-        lcd.setCursor(0, 1);
-        lcd.print(buf);
+        setCursor(0, 1);
+        print(buf);
 
         // print:
         // 13:59
-        lcd.setCursor(15, 0);
-        substr_to_lcd(buf, 11, 13);
+        setCursor(15, 0);
+        printSubstr(buf, 11, 13);
         
         //every other second has no ':' mark
-        lcd.setCursor(15+2, 0);
-        if(rtc_time.second % 2 != 0) lcd.print(' ');
-        else lcd.print(':');
+        setCursor(15+2, 0);
+        if(rtc_time.second % 2 != 0) print(' ');
+        else print(':');
 
-        lcd.setCursor(15+3, 0);
-        substr_to_lcd(buf, 14, 16);
+        setCursor(15+3, 0);
+        printSubstr(buf, 14, 16);
 
         // print:
         // 21.09.2022
-        lcd.setCursor(0, 0);
-        substr_to_lcd(buf, 8, 10);
-        lcd.print('.');
-        substr_to_lcd(buf, 5, 7);
-        lcd.print('.');
-        substr_to_lcd(buf, 0, 4);
+        setCursor(0, 0);
+        printSubstr(buf, 8, 10);
+        print('.');
+        printSubstr(buf, 5, 7);
+        print('.');
+        printSubstr(buf, 0, 4);
     }
+}
+
+void I2CLCD::showI2CError(void){
+    setCursor(17, 3);
+    print(F("I2C"));
 }

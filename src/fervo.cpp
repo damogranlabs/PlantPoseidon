@@ -4,11 +4,10 @@
 
 #include "pinout.h"
 #include "fervo.h"
-#include "util.h"
 #include "outlet.h"
+#include "util.h"
 
-// TODO: un-include
-#include "display.h"
+#include "globals.h"
 
 ///
 /// Methods and all
@@ -61,24 +60,19 @@ void Fervo::easeMove(int new_angle){
     //}
 };
 
-///
-/// Globals
-///
-Fervo servo;
+int Fervo::outletToAngle(int i_outlet){
+    // this should represent approximately 180 degrees
+    int servo_range = getMax() - getMin();
+    int delta_outlet = 2*servo_range/N_OUTLETS;
+
+    int pos_outlet = getZero() + i_outlet*delta_outlet;
+    if(pos_outlet > getMax()) pos_outlet -= servo_range + delta_outlet/2;
+
+    return pos_outlet;
+}
 
 void setup_servo(void)
 {
     servo.attach(SERV1_PIN);
     servo.write(90);
-}
-
-int outletToAngle(int i_outlet){
-    // this should represent approximately 180 degrees
-    int servo_range = servo.getMax() - servo.getMin();
-    int delta_outlet = 2*servo_range/N_OUTLETS;
-
-    int pos_outlet = servo.getZero() + i_outlet*delta_outlet;
-    if(pos_outlet > servo.getMax()) pos_outlet -= servo_range + delta_outlet/2;
-
-    return pos_outlet;
 }

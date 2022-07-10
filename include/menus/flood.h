@@ -1,7 +1,7 @@
 #ifndef _FLOOD_H
 #define _FLOOD_H
 
-#include "ui/menu.h"
+#include "menus/menu.h"
 
 ///
 /// Menu
@@ -21,10 +21,5 @@ public:
     virtual void change(int direction);
     void save(void){ /* nothing to save */ };
 };
-
-///
-/// Globals
-///
-extern FloodMenu flood_menu;
 
 #endif

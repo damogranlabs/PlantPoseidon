@@ -21,11 +21,4 @@ struct schedule_data
     uint8_t hour;
 };
 
-///
-/// Date and time
-///
-bool isLeapYear(int year);
-int daysInMonth(int year, int month);
-int validateDay(int year, int month, int day);
-
 #endif

@@ -1,11 +1,13 @@
-#include "ui/menu.h"
-#include "ui/settings.h"
+#include "menus/menu.h"
+#include "menus/settings.h"
 #include "schedule.h"
 #include "display.h"
 #include "outlet.h"
 #include "fervo.h"
 
 #include "util.h"
+
+#include "globals.h"
 
 ///
 /// Menu
@@ -44,7 +46,7 @@ OutletScreen::OutletScreen(Outlet *o)
 void OutletScreen::show(bool forward)
 {
     lcd.setCursor(0, 0);
-    pgmToLcd(0, 0, outlet_label);
+    lcd.printPgm(0, 0, outlet_label);
     lcd.print(' ');
     lcd.print(outlet->getId() + 1);
 
@@ -90,7 +92,7 @@ void ClockScreen::show(bool forward)
         items[3]->setValue(rtc_time.month);
         items[4]->setValue(rtc_time.year + 2000);
     }
-    else showI2CError();
+    else lcd.showI2CError();
     
     Screen::show(forward);
 }
@@ -110,7 +112,7 @@ void ClockScreen::save(void){
         items[1]->getValue(), // minute
         0 // second
     );
-    if(ds1338_write_time(&rtc_time) != 0) showI2CError();
+    if(ds1338_write_time(&rtc_time) != 0) lcd.showI2CError();
 }
 
 /************** Servo screen **************/
@@ -184,7 +186,7 @@ void IntervalItem::renderValue(void){
     }
 
     l_value = lcd.print(number);
-    l_value += pgmToLcd(line, column + l_label + 1 + l_value, unit);
+    l_value += lcd.printPgm(line, column + l_label + 1 + l_value, unit);
 };
 
 void DurationItem::renderValue(void){
@@ -201,9 +203,3 @@ void DurationItem::renderValue(void){
         l_value += lcd.print(F("min"));
     }
 }
-
-
-///
-/// Globals
-///
-SettingsMenu settings_menu;

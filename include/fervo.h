@@ -44,17 +44,13 @@ public:
     void load(void);
     void save(void);
 
+    int outletToAngle(int i_outlet);
+
 private:
     servo_data data;
 };
 
-///
-/// Globals
-///
-extern Fervo servo;
-
 void setup_servo(void);
-
 int outletToAngle(int i_outlet);
 
 #endif

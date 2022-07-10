@@ -1,8 +1,10 @@
 #include "outlet.h"
-#include "ui/menu.h"
+#include "menus/menu.h"
 #include "display.h"
 #include "util.h"
 #include "io.h"
+
+#include "globals.h"
 
 ///
 /// Menu
@@ -50,7 +52,7 @@ void Menu::navigate(int direction){
     if(!screens[i_active]->navigate(direction)){
         // show the new screen
         lcd.clear();
-        i_active = contain(i_active + direction, 0, n_screens-1);
+        i_active = wrap(i_active + direction, 0, n_screens-1);
         screens[i_active]->show(direction >= 0);
     }
 

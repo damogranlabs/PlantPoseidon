@@ -1,8 +1,10 @@
 #include <Arduino.h>
 
 #include "display.h"
-#include "ui/menu.h"
+#include "menus/menu.h"
 #include "util.h"
+
+#include "globals.h"
 
 Item::Item(const char *l, int r, int c, int v)
 {
@@ -27,7 +29,7 @@ Item::Item(const char *l, int r, int c, int v,
 void Item::show(void){
     if(label){
         // display the label on the screen and store its length
-        l_label = pgmToLcd(line, column, label);
+        l_label = lcd.printPgm(line, column, label);
 
         // a space between a label and current choice
         lcd.setCursor(column + l_label, line);
@@ -142,7 +144,7 @@ void ChoiceItem::change(int direction){
     }
 
     // change index
-    i_choice = contain(i_choice + direction, 0, n_choices - 1);
+    i_choice = wrap(i_choice + direction, 0, n_choices - 1);
     
     // change value
     value = pgm_read_word_near(choices + i_choice);

@@ -2,9 +2,11 @@
 
 #include "outlet.h"
 #include "display.h"
-#include "ui/menu.h"
-#include "ui/flood.h"
-#include "ui/settings.h"
+#include "menus/menu.h"
+#include "menus/settings.h"
+#include "menus/flood.h"
+
+#include "globals.h"
 
 void FloodMenu::begin(void){
     n_screens = 1;
@@ -48,8 +50,3 @@ void FloodScreen::change(int direction){
         items[2]->activate();
     }
 }
-
-///
-/// Globals
-///
-FloodMenu flood_menu;

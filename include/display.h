@@ -7,15 +7,18 @@
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_I2Cexp.h>
 
+
 #define CC_LEFT 0
 #define CC_RIGHT 1
 #define CC_ON 2
 #define CC_OFF 3
 
-#define LCD_ADD 0x27
+#define LCD_ADDR 0x27
 #define LCD_X_SIZE 20
 #define LCD_Y_SIZE 4
 #define LCD_BACKLIGHT_TIMEOUT 10000
+
+#define LCD_BUF_SIZE (LCD_X_SIZE+1)
 
 // Menu texts
 extern unsigned char arrow_left[8];
@@ -39,15 +42,29 @@ extern const char servo_min_label[] PROGMEM;
 extern const char servo_max_label[] PROGMEM;
 extern const char servo_zero_label[] PROGMEM;
 
-extern hd44780_I2Cexp lcd;
-void setup_lcd(void);
+///
+/// extend LCD with backlight tracking
+///
+class I2CLCD : public hd44780_I2Cexp
+{
+public:
+    using hd44780_I2Cexp::hd44780_I2Cexp;
+    void begin(void);
 
-// backlight
-extern unsigned long t_backlight;
-void touch(void);
-void update_backlight(void);
+    // reset BL timer
+    void touch(void);
+    // check for timeout and reset
+    void check(void);
 
-// status
-void show_status(void);
+    int printPgm(int line, int column, const char *text);
+    int printPgmTable(int line, int column, const char * const *table, int i_entry);
+    void printSubstr(char *str, int start, int end);
+
+    void showStatus(void);
+    void showI2CError(void);
+private:
+    char pgm_buffer[LCD_BUF_SIZE];
+    unsigned long t_backlight{};
+};
 
 #endif

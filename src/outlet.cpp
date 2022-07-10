@@ -8,8 +8,7 @@
 #include "schedule.h"
 #include "util.h"
 
-// TODO: remove
-#include "display.h"
+#include "globals.h"
 
 
 ///
@@ -107,7 +106,7 @@ void Outlet::open(unsigned long duration, bool log){
     }
     
     // turn the plate
-    servo.easeMove(outletToAngle(id));
+    servo.easeMove(servo.outletToAngle(id));
 
     // open the falve
     lcd.setCursor(19, 0);
@@ -144,8 +143,3 @@ bool Outlet::check(void){
 
     return false;
 }
-
-///
-/// Globals
-///
-Outlet *outlets[N_OUTLETS];

@@ -2,7 +2,7 @@
 #define _SETTINGS_H
 
 #include "outlet.h"
-#include "ui/menu.h"
+#include "menus/menu.h"
 
 ///
 /// Menu
@@ -76,10 +76,5 @@ public:
         activate();
     };
 };
-
-///
-/// Globals
-///
-extern SettingsMenu settings_menu;
 
 #endif

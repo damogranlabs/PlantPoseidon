@@ -49,9 +49,4 @@ private:
     void open(unsigned long duration, bool log);
 };
 
-///
-/// Globals
-///
-extern Outlet *outlets[N_OUTLETS];
-
 #endif
