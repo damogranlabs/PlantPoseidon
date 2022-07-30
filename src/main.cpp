@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <hd44780.h>
+#include <DHT.h>
 
 #include "io.h"
 #include "pinout.h"
@@ -26,6 +27,8 @@ OneButton btn_setup(BTN_SETUP_PIN);
 OneButton btn_prev(BTN_PREV_PIN);
 
 Encoder enc(ENC_B_PIN, ENC_A_PIN);
+
+DHT dht(DHT_PIN, DHT22);
 
 Outlet *outlets[N_OUTLETS];
 Fervo servo;
@@ -59,6 +62,7 @@ void setup()
     lcd.begin();
     setup_gpio();
     setup_rtc();
+    dht.begin();
     setup_servo();
     setup_outlets();
     setup_menus();

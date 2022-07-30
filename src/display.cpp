@@ -39,7 +39,8 @@ unsigned char bool_on[8] = {
     0b10100,
     0b01000,
     0b00000,
-    0b00000};
+    0b00000
+};
 
 unsigned char bool_off[8] = {
     0b00000,
@@ -49,7 +50,19 @@ unsigned char bool_off[8] = {
     0b01010,
     0b10001,
     0b00000,
-    0b00000};
+    0b00000
+};
+
+unsigned char degree[8] = {
+    0b00111,
+    0b00101,
+    0b00111,
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00000
+};
 
 ///
 /// Menu texts
@@ -91,6 +104,7 @@ void I2CLCD::begin(void){
     createChar(CC_RIGHT, arrow_right);
     createChar(CC_ON, bool_on);
     createChar(CC_OFF, bool_off);
+    createChar(CC_DEGREE, degree);
 
     backlight(); // handle separately
     t_backlight = millis();
@@ -147,33 +161,38 @@ void I2CLCD::showStatus(void){
     // 0123456789012345678
     // 2022-06-19T13:58:11
     format_time_str(&rtc_time, buf);
-    setCursor(0, 1);
-    print(buf);
+    
+    // extract relevant data from ready-formatted buffer
+    // 13:59
+    setCursor(15, 0);
+    printSubstr(buf, 11, 13);
+    
+    //every other second has no ':' mark
+    setCursor(15+2, 0);
+    if(rtc_time.second % 2 != 0) print(' ');
+    else print(':');
+
+    setCursor(15+3, 0);
+    printSubstr(buf, 14, 16);
 
     // print:
-    // 13:59
-    // setCursor(15, 0);
-    // printSubstr(buf, 11, 13);
-    
-    // //every other second has no ':' mark
-    // setCursor(15+2, 0);
-    // if(rtc_time.second % 2 != 0) print(' ');
-    // else print(':');
+    // 21.09.2022
+    setCursor(0, 0);
+    printSubstr(buf, 8, 10);
+    print('.');
+    printSubstr(buf, 5, 7);
+    print('.');
+    printSubstr(buf, 0, 4);
 
-    // setCursor(15+3, 0);
-    // printSubstr(buf, 14, 16);
-
-    // // print:
-    // // 21.09.2022
-    // setCursor(0, 0);
-    // printSubstr(buf, 8, 10);
-    // print('.');
-    // printSubstr(buf, 5, 7);
-    // print('.');
-    // printSubstr(buf, 0, 4);
-}
-
-void I2CLCD::showI2CError(void){
-    setCursor(17, 3);
-    print(F("I2C"));
+    // clear the second line
+    memset(buf, ' ', sizeof(buf) - 1);
+    setCursor(0, 1);
+    print(buf);
+    // write down temperature and humidity
+    setCursor(0, 1);
+    print((int)dht.readTemperature());
+    write(byte(CC_DEGREE));
+    print("C ");
+    print((int)dht.readHumidity());
+    print('%');    
 }

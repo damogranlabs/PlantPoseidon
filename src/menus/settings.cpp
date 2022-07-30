@@ -110,7 +110,6 @@ void ClockScreen::save(void){
         items[1]->getValue(), // minute
         0 // second
     );
-    if(ds1338_write_time(&rtc_time) != 0) lcd.showI2CError();
 
     changed = false;
 }

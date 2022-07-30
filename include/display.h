@@ -12,6 +12,7 @@
 #define CC_RIGHT 1
 #define CC_ON 2
 #define CC_OFF 3
+#define CC_DEGREE 4
 
 #define LCD_ADDR 0x27
 #define LCD_X_SIZE 20
@@ -61,7 +62,6 @@ public:
     void printSubstr(char *str, int start, int end);
 
     void showStatus(void);
-    void showI2CError(void);
 private:
     char pgm_buffer[LCD_BUF_SIZE];
     unsigned long t_backlight{};

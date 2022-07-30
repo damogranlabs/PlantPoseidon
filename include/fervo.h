@@ -29,9 +29,6 @@ class Fervo : public Servo
 public:
     Fervo(void);
 
-    // same as write() but with a finite acceleration
-    void easeMove(int new_angle);
-
     // add a few details for easier handling of settings;
     int getMin(void) { return data.min; };
     int getMax(void) { return data.max; };
@@ -44,10 +41,13 @@ public:
     void load(void);
     void save(void);
 
-    int outletToAngle(int i_outlet);
-
+    // same as write() but with a finite acceleration
+    void easeMove(int new_angle);
+    void moveToOutlet(int id){ easeMove(outletToAngle(id)); };
 private:
     servo_data data;
+
+    int outletToAngle(int i_outlet);
 };
 
 void setup_servo(void);
