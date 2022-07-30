@@ -33,8 +33,12 @@ class ClockScreen : public Screen
 public:
     ClockScreen();
 
+    void change(int direction);
     void show(bool end_first);
     void save(void);
+private:
+    // don't re-save the clock if it wasn't adjusted
+    bool changed{false};
 };
 
 class ServoScreen : public Screen

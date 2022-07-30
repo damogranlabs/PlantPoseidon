@@ -2,9 +2,8 @@
 
 #include "pinout.h"
 #include "display.h"
-#include "schedule.h"
 #include "util.h"
-
+#include "globals.h"
 ///
 /// Custom characters
 ///
@@ -143,46 +142,35 @@ void I2CLCD::printSubstr(char *str, int start, int end){
 }
 
 void I2CLCD::showStatus(void){
-    static unsigned long t_updated = millis();
     static char buf[20];
+    // format_time_str prints:
+    // 0123456789012345678
+    // 2022-06-19T13:58:11
+    format_time_str(&rtc_time, buf);
+    setCursor(0, 1);
+    print(buf);
+
+    // print:
+    // 13:59
+    // setCursor(15, 0);
+    // printSubstr(buf, 11, 13);
     
-    if(millis() - t_updated > 1000){
-        t_updated = millis();
+    // //every other second has no ':' mark
+    // setCursor(15+2, 0);
+    // if(rtc_time.second % 2 != 0) print(' ');
+    // else print(':');
 
-        if(ds1338_read_time(&rtc_time) != 0){
-            showI2CError();
-            return;
-        }
+    // setCursor(15+3, 0);
+    // printSubstr(buf, 14, 16);
 
-        // format_time_str prints:
-        // 0123456789012345678
-        // 2022-06-19T13:58:11
-        format_time_str(&rtc_time, buf);
-        setCursor(0, 1);
-        print(buf);
-
-        // print:
-        // 13:59
-        setCursor(15, 0);
-        printSubstr(buf, 11, 13);
-        
-        //every other second has no ':' mark
-        setCursor(15+2, 0);
-        if(rtc_time.second % 2 != 0) print(' ');
-        else print(':');
-
-        setCursor(15+3, 0);
-        printSubstr(buf, 14, 16);
-
-        // print:
-        // 21.09.2022
-        setCursor(0, 0);
-        printSubstr(buf, 8, 10);
-        print('.');
-        printSubstr(buf, 5, 7);
-        print('.');
-        printSubstr(buf, 0, 4);
-    }
+    // // print:
+    // // 21.09.2022
+    // setCursor(0, 0);
+    // printSubstr(buf, 8, 10);
+    // print('.');
+    // printSubstr(buf, 5, 7);
+    // print('.');
+    // printSubstr(buf, 0, 4);
 }
 
 void I2CLCD::showI2CError(void){

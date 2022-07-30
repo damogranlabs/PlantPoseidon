@@ -4,12 +4,15 @@
 #include "io.h"
 #include "pinout.h"
 #include "display.h"
-#include "schedule.h"
 #include "outlet.h"
 #include "fervo.h"
 #include "menus/settings.h"
 #include "menus/flood.h"
 #include "util.h"
+#include "DS1338.h"
+
+// timekeeping
+struct rtctime_t rtc_time;
 
 I2CLCD lcd(LCD_ADDR,
     I2Cexp_PCF8574,
@@ -29,6 +32,14 @@ Fervo servo;
 
 SettingsMenu settings_menu;
 FloodMenu flood_menu;
+
+int i = 0;
+unsigned long t = 0;
+
+void setup_rtc(void){
+    ds1338_clean_osf();
+    ds1338_disable_sqw();
+}
 
 void setup_outlets(void){
     for (int i = 0; i < N_OUTLETS; i++){
@@ -58,8 +69,6 @@ void setup()
 }
 
 void loop(){
-    static int i;
-
     lcd.check();
     update_inputs();
 
@@ -67,11 +76,16 @@ void loop(){
     if(flood_menu.is_active()) return;
     if(settings_menu.is_active()) return;
 
-    // check if there's anything to water
-    for(i = 0; i < N_OUTLETS; i++){
-        outlets[i]->check();
-    }
+    // update time/display every second
+    if(millis() - t > 1000){
+        ds1338_read_time(&rtc_time);
 
-    // nothing else to do: show status
-    lcd.showStatus();
+        // nothing else to do: show status
+        lcd.showStatus();
+        
+        i = (i+1) % N_OUTLETS;
+        outlets[i]->check();
+
+        t = millis();
+    }
 }

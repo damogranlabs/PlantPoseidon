@@ -3,8 +3,6 @@
 
 #include <Arduino.h>
 
-#include "schedule.h"
-
 ///
 /// Settings/defaults
 ///
@@ -16,9 +14,20 @@
 #define O_INTERVAL_DEFAULT 24 // hours
 #define O_DURATION_DEFAULT 10 // seconds
 
-///
-/// Class definitions and whatnot
-///
+struct schedule_data {
+    // schedule - when to open
+    uint16_t interval; // always in hours
+    uint16_t time; // hour of the day
+    uint16_t duration; // always in seconds
+    bool enabled;
+
+    // time last opened
+    uint8_t year;
+    uint8_t month; // these two could be combined into
+    uint8_t day;   // a single uint8 to save space; currently there's no need
+    uint8_t hour;
+};
+
 // pumping schedule data
 class Outlet
 {
@@ -26,9 +35,8 @@ public:
     Outlet(int id);
     int getId(void) { return id; };
 
-    // schedule
-    schedule_data *getSchedule(void) { return &schedule; };
-    bool updateSchedule(bool enabled, int time, int interval, int duration);
+    // schedule: stored in eeprom
+    struct schedule_data schedule;
 
     // EEPROM
     void load(void);
@@ -37,14 +45,12 @@ public:
     // valve steering
     bool check(void); // open on schedule
     void flood(unsigned long duration); // or open from the flood menu
-    
 
 private:
     int id;
-    unsigned int address; // EEPROM
+    uint16_t address;
+    uint16_t getAddress(void){ return id*sizeof(schedule) + sizeof(unsigned long); };
 
-    // schedule and task managing
-    struct schedule_data schedule;
     bool pastDue(void);
     void open(unsigned long duration, bool log);
 };

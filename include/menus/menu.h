@@ -8,7 +8,7 @@
 
 #include "outlet.h"
 
-#define MENU_TIMEOUT 15000
+#define MENU_TIMEOUT 30000
 
 class Menu; // a container/handler for Screens
     class Screen; // a container for Items

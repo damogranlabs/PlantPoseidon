@@ -1,6 +1,5 @@
 #include "menus/menu.h"
 #include "menus/settings.h"
-#include "schedule.h"
 #include "display.h"
 #include "outlet.h"
 #include "fervo.h"
@@ -37,10 +36,10 @@ OutletScreen::OutletScreen(Outlet *o)
     n_items = 4;
     items = new Item *[n_items]; // https://stackoverflow.com/questions/21391089/variable-size-array-of-pointers-c
 
-    items[0] = new BoolItem(active_label, 1, 2, outlet->getSchedule()->enabled ? 1 : 0);
-    items[1] = new IntervalItem(interval_label, 2, 2, outlet->getSchedule()->interval, intervals);
-    items[2] = new Item(time_label, 3, 2, outlet->getSchedule()->time, true, 'h', 0, 23);
-    items[3] = new DurationItem(duration_label, 3, 9, outlet->getSchedule()->duration, durations);
+    items[0] = new BoolItem(active_label, 1, 2, outlet->schedule.enabled ? 1 : 0);
+    items[1] = new IntervalItem(interval_label, 2, 2, outlet->schedule.interval, intervals);
+    items[2] = new Item(time_label, 3, 2, outlet->schedule.time, true, 'h', 0, 23);
+    items[3] = new DurationItem(duration_label, 3, 9, outlet->schedule.duration, durations);
 }
 
 void OutletScreen::show(bool forward)
@@ -53,19 +52,16 @@ void OutletScreen::show(bool forward)
     Screen::show(forward);
 }
 
-void OutletScreen::save(void)
-{
-    outlet->updateSchedule(
-        items[0]->getValue() != 0,
-        items[1]->getValue(),
-        items[2]->getValue(),
-        items[3]->getValue());
+void OutletScreen::save(void){
+    outlet->schedule.enabled = items[0]->getValue() != 0;
+    outlet->schedule.interval = items[1]->getValue();
+    outlet->schedule.time = items[2]->getValue();
+    outlet->schedule.duration = items[3]->getValue();
     outlet->save();
 }
 
 /************** Clock screen **************/
-ClockScreen::ClockScreen(void)
-{
+ClockScreen::ClockScreen(void){
     n_items = 5;
     items = new Item *[n_items];
 
@@ -79,40 +75,44 @@ ClockScreen::ClockScreen(void)
     items[4] = new Item(date_point, 2, 10, 2022, false, (char)0, 2022, 2099);
 }
 
-void ClockScreen::show(bool forward)
-{
+void ClockScreen::show(bool forward){
     lcd.setCursor(0, 0);
     lcd.print(F("Ura in datum"));
 
-    if(ds1338_read_time(&rtc_time) == 0){
-        items[0]->setValue(rtc_time.hour);
-        items[1]->setValue(rtc_time.minute);
+    items[0]->setValue(rtc_time.hour);
+    items[1]->setValue(rtc_time.minute);
 
-        items[2]->setValue(rtc_time.day);
-        items[3]->setValue(rtc_time.month);
-        items[4]->setValue(rtc_time.year + 2000);
-    }
-    else lcd.showI2CError();
+    items[2]->setValue(rtc_time.day);
+    items[3]->setValue(rtc_time.month);
+    items[4]->setValue(rtc_time.year + 2000);
     
     Screen::show(forward);
 }
 
+void ClockScreen::change(int direction){
+    changed = true;
+    Screen::change(direction);
+}
+
 void ClockScreen::save(void){
-    // TODO: check invalid dates
-    int year = items[4]->getValue();
+    if(!changed) return;
+    
+    int year = items[4]->getValue() - 2000;
     int month = items[3]->getValue();
     int day = items[2]->getValue();
 
     make_time(
         &rtc_time,
-        year - 2000,
+        year,
         month,
-        validateDay(year, month, day),
+        validateDay(year , month, day),
         items[0]->getValue(), // hour
         items[1]->getValue(), // minute
         0 // second
     );
     if(ds1338_write_time(&rtc_time) != 0) lcd.showI2CError();
+
+    changed = false;
 }
 
 /************** Servo screen **************/
@@ -134,14 +134,12 @@ void ServoScreen::show(bool forward)
     Screen::show(forward);
 }
 
-void ServoScreen::change(int direction)
-{
+void ServoScreen::change(int direction){
     Screen::change(direction * 10);
     servo.easeMove(items[i_item]->getValue());
 };
 
-void ServoScreen::save(void)
-{
+void ServoScreen::save(void){
     servo.setMin(items[0]->getValue());
     servo.setMax(items[1]->getValue());
     servo.setZero(items[2]->getValue());

@@ -1,4 +1,5 @@
-#include <inttypes.h>
+#include <Arduino.h>
+#include <time.h> // the standard c library
 
 #include "util.h"
 
@@ -40,7 +41,6 @@ int wrap(int value, int min, int max){
     return value;
 }
 
-
 bool isLeapYear(int year){
     if(year % 400 == 0) return true;
     if(year % 100 == 0) return false;
@@ -70,4 +70,49 @@ uint8_t validateDay(int year, int month, int day){
     if(day > max_days) return max_days;
     
     return day;
+}
+
+/**
+ * \brief Returns true * if hour==time (interval >= 24h) or hour == time +/- 12 (interval = 12h)
+ *
+ * \param rtc_hour current time
+ * \param schedule_time scheduled time
+ * \param schedule_interval scheduled interval
+ */
+bool compareHours(int rtc_hour, int schedule_time, int schedule_interval){
+    if(rtc_hour == schedule_time) return true;
+    else return rtc_hour == (schedule_time % schedule_interval);
+}
+
+/**
+ * \brief Returns difference in hours between two specified dates.
+ * 
+ * The '_now' date should be bigger than the '_last'. All dates are written
+ * as they are in real-life, that is, 2022-01-31 23:59. No zero-based
+ * months, 1900-based years or whatever.
+ */
+long hourDelta(
+    uint16_t y_now, uint8_t m_now, uint8_t d_now, uint8_t h_now, 
+    uint16_t y_last, uint8_t m_last, uint8_t d_last, uint8_t h_last)
+{
+    struct tm t_now;
+    struct tm t_last;
+
+    memset(&t_now, 0, sizeof(t_now));
+    memset(&t_last, 0, sizeof(t_last));
+
+    // "Datetime operations are notoriously tricky"
+    //                            - Stackoverflow
+    // copy the 'rtc' data to the standard <time.h> tm and run difftime;
+    t_now.tm_year = y_now - 1900;
+    t_now.tm_mon = m_now - 1;
+    t_now.tm_mday = d_now;
+    t_now.tm_hour = h_now;
+
+    t_last.tm_year = y_last - 1900;
+    t_last.tm_mon = m_last - 1;
+    t_last.tm_mday = d_last;
+    t_last.tm_hour = h_last;
+
+    return (long)(difftime(mktime(&t_now), mktime(&t_last))/3600);
 }

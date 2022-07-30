@@ -123,8 +123,7 @@ ChoiceItem::ChoiceItem(const char *label, int line, int column, int value, const
 
     int i = 0;
     while((int)pgm_read_word_near(choices + i++) != -1){ n_choices += 1; }
-
-    // find i_choice
+    
     change(0);
 };
 

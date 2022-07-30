@@ -1,15 +1,11 @@
 #include <Arduino.h>
 #include <EEPROM.h>
-#include <time.h>
 
 #include "pinout.h"
 #include "outlet.h"
 #include "fervo.h"
-#include "schedule.h"
 #include "util.h"
-
 #include "globals.h"
-
 
 ///
 /// Methods and all
@@ -22,20 +18,13 @@ Outlet::Outlet(int outlet_id){
     load();
 }
 
-bool Outlet::updateSchedule(bool enabled, int interval, int time, int duration){
-    schedule.enabled = enabled;
-    schedule.interval = interval;
-    schedule.time = time;
-    schedule.duration = duration;
-}
-
 void Outlet::load(void){
     EEPROM.get(address, schedule);
 
     // CRC check if everything is OK;
     // this is written in EEPROM
     unsigned long saved_crc;
-    EEPROM.get(address + sizeof(struct schedule_data), saved_crc);
+    EEPROM.get(address + sizeof(schedule), saved_crc);
     // this is what has just been loaded
     unsigned long loaded_crc = crc((uint8_t *)&schedule, sizeof(schedule));
 
@@ -46,6 +35,12 @@ void Outlet::load(void){
         schedule.interval = O_INTERVAL_DEFAULT;
         schedule.time = O_TIME_DEFAULT;
         schedule.duration = O_DURATION_DEFAULT;
+
+        // last opened? no idea
+        schedule.year = 0;
+        schedule.month = 1;
+        schedule.day = 1;
+        schedule.hour = 0;
     }
 }
 
@@ -67,32 +62,20 @@ bool Outlet::pastDue(void){
 
     // 2. the time is as requested
     // (Achtung: also take into account less than 24h intervals)
-    if(rtc_time.hour != schedule.time % schedule.interval){ // tested with python
+    if(!compareHours(rtc_time.hour, schedule.time, schedule.interval)){
         return false;
     }
 
     // 3. last time it was opened is greater/equal to specified interval
-    struct tm tnow;
-    struct tm targ;
+    long delta = hourDelta(
+        rtc_time.year + 2000, rtc_time.month, rtc_time.day, rtc_time.hour,
+        schedule.year + 2000, schedule.month, schedule.day, schedule.hour);
 
-    // "Datetime operations are notoriously tricky"
-    //                            - Stackoverflow
-    // copy the 'rtc' data to the standard <time.h> tm and run difftime;
-    tnow.tm_year = rtc_time.year + 2000;
-    tnow.tm_mon = rtc_time.month + 1;
-    tnow.tm_mday = rtc_time.day;
-    tnow.tm_hour = rtc_time.hour;
-    tnow.tm_min = 0;
-    tnow.tm_sec = 0;
-
-    targ.tm_year = schedule.year + 2000;
-    targ.tm_mon = schedule.month + 1;
-    targ.tm_mday = schedule.day;
-    targ.tm_hour = schedule.hour;
-    targ.tm_min = 0;
-    targ.tm_sec = 0;
-
-    return (int)(difftime(mktime(&targ), mktime(&tnow))/3600) >= schedule.interval;
+    if(delta < 0){
+        // something wrong with data
+        return true;
+    }
+    return delta >= schedule.interval;
 }
 
 void Outlet::open(unsigned long duration, bool log){

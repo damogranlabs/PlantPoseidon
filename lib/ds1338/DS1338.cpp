@@ -249,9 +249,12 @@ uint8_t ds1338_read_time(struct rtctime_t *time)
 		time->hour = decode_bcd(buf[2]);
 	}
 
+	// ds1338 doesn't have the century bit...
 	time->day = decode_bcd(buf[4]);
-	time->month = decode_bcd(buf[5] & 0x1F);
-	time->year = 100 * ((buf[5] >> 7) & 0x01) + decode_bcd(buf[6]);
+	//time->month = decode_bcd(buf[5] & 0x1F);
+	time->month = decode_bcd(buf[5]);
+	//time->year = 100 * ((buf[5] >> 7) & 0x01) + decode_bcd(buf[6]);
+	time->year = 10 * (buf[6] >> 4) + decode_bcd(buf[6] & 0x0F);
 
 	return 0;
 }
