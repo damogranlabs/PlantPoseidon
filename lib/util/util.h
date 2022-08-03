@@ -16,4 +16,7 @@ bool compareHours(int hour, int time, int interval);
 long hourDelta(uint16_t y_now, uint8_t m_now, uint8_t d_now, uint8_t h_now, 
     uint16_t y_last, uint8_t m_last, uint8_t d_last, uint8_t h_last);
 
+
+template<typename T> inline const T uabs(T const & x){ return ( x<0 ) ? -x : x; }
+
 #endif

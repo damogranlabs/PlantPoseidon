@@ -53,11 +53,15 @@ void Fervo::easeMove(int new_angle){
 
     if(old_angle == new_angle) return;
 
-    //for(long i = old_angle; i <= new_angle; i++){
-        writeMicroseconds(new_angle);
-    //    delayMicroseconds(50);
+    // long map(long x, long in_min, long in_max, long out_min, long out_max)
+    #define T_EASING 3000
+    long a, d = T_EASING*uabs(old_angle - new_angle)/(SERVO_MAX - SERVO_MIN);
 
-    //}
+    for(long i = 0; i < d; i++){
+        a = map(i, 0, d, old_angle, new_angle);
+        writeMicroseconds(a);
+        delay(1);
+    }
 };
 
 int Fervo::outletToAngle(int i_outlet){

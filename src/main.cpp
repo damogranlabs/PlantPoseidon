@@ -80,7 +80,6 @@ void loop(){
     if(flood_menu.is_active()) return;
     if(settings_menu.is_active()) return;
 
-    // update time/display every second
     if(millis() - t > 1000){
         ds1338_read_time(&rtc_time);
 

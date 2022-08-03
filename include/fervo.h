@@ -19,9 +19,13 @@
 ///
 struct servo_data
 {
+    // reachable angles
     int min;
     int max;
+    // position of the first outlet
     int zero;
+    // position of the second outlet
+    int one;
 };
 
 class Fervo : public Servo
@@ -33,10 +37,12 @@ public:
     int getMin(void) { return data.min; };
     int getMax(void) { return data.max; };
     int getZero(void) { return data.zero; };
+    int getOne(void) { return data.one; };
 
     void setMin(int v) { data.min = v; };
     void setMax(int v) { data.max = v; };
     void setZero(int v) { data.zero = v; };
+    void setOne(int v) { data.one = v; };
 
     void load(void);
     void save(void);

@@ -110,6 +110,7 @@ void ClockScreen::save(void){
         items[1]->getValue(), // minute
         0 // second
     );
+    ds1338_write_time(&rtc_time);
 
     changed = false;
 }
@@ -117,12 +118,13 @@ void ClockScreen::save(void){
 /************** Servo screen **************/
 ServoScreen::ServoScreen(void)
 {
-    n_items = 3;
+    n_items = 4;
     items = new Item *[n_items];
 
     items[0] = new Item(servo_min_label, 1, 2, servo.getMin(), true, (char)0, 100, 3000);
-    items[1] = new Item(servo_max_label, 2, 2, servo.getMax(), true, (char)0, 100, 3000);
-    items[2] = new Item(servo_zero_label, 3, 2, servo.getZero(), true, (char)0, 100, 3000);
+    items[1] = new Item(servo_max_label, 1, 12, servo.getMax(), true, (char)0, 100, 3000);
+    items[2] = new Item(servo_zero_label, 2, 2, servo.getZero(), true, (char)0, 100, 3000);
+    items[3] = new Item(servo_zero_label, 3, 2, servo.getOne(), true, (char)0, 100, 3000);
 };
 
 void ServoScreen::show(bool forward)
@@ -142,6 +144,7 @@ void ServoScreen::save(void){
     servo.setMin(items[0]->getValue());
     servo.setMax(items[1]->getValue());
     servo.setZero(items[2]->getValue());
+    servo.setOne(items[3]->getValue());
     servo.save();
 }
 

@@ -42,6 +42,7 @@ extern const char date_point[] PROGMEM;
 extern const char servo_min_label[] PROGMEM;
 extern const char servo_max_label[] PROGMEM;
 extern const char servo_zero_label[] PROGMEM;
+extern const char servo_one_label[] PROGMEM;
 
 ///
 /// extend LCD with backlight tracking
