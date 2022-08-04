@@ -93,7 +93,7 @@ const char date_point[] PROGMEM = ".";
 const char servo_min_label[] PROGMEM = "Min";
 const char servo_max_label[] PROGMEM = "Max";
 const char servo_zero_label[] PROGMEM = "Pozicija #1";
-const char servo_one_label[] PROGMEM = "Pozicija #2";
+const char servo_mid_label[] PROGMEM = "Pozicija #2";
 
 void I2CLCD::begin(void){
     hd44780_I2Cexp::begin(LCD_X_SIZE, LCD_Y_SIZE);

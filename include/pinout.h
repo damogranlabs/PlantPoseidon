@@ -8,9 +8,6 @@
 #define P_LCD_D7 6
 #define P_LCD_BL 7
 
-#define SCK_PIN A5
-#define SDA_PIN A5
-
 #define ENC_A_PIN 3
 #define ENC_B_PIN 4
 

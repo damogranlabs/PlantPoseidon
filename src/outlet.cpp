@@ -86,15 +86,23 @@ void Outlet::open(unsigned long duration, bool log){
         schedule.month = rtc_time.month;
         schedule.day = rtc_time.day;
         schedule.hour = rtc_time.hour;
+        save();
     }
 
+    // LCD:
+    // TODO: update clock (?)
+    // TODO: turn on backlight
+    // TODO: better indicator
     int pos = 0;
+    lcd.backlight();
     lcd.setCursor(0, 3);
     pos += lcd.print(F("Zalivam #"));
     pos += lcd.print(id+1);
     pos += lcd.print(": ");
     
     // turn the plate
+    servo.write(servo.read());
+    servo.attach(SERV1_PIN);
     servo.moveToOutlet(id);
 
     // open the falve
@@ -131,8 +139,10 @@ void Outlet::open(unsigned long duration, bool log){
     // close the falve
     // TODO
 
+    servo.detach();
+
+
     // cleanup
-    lcd.clear();
 }
 
 void Outlet::flood(unsigned long duration){
