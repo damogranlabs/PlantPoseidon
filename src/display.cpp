@@ -117,7 +117,6 @@ void I2CLCD::touch(void){
 }
 
 void I2CLCD::check(void){
-    // TODO TODO: check power consumption/7805 temperature
     if(millis() - t_backlight > LCD_BACKLIGHT_TIMEOUT){
         noBacklight();
     }
@@ -166,15 +165,7 @@ void I2CLCD::showStatus(void){
     // extract relevant data from ready-formatted buffer
     // 13:59
     setCursor(15, 0);
-    printSubstr(buf, 11, 13);
-    
-    //every other second has no ':' mark
-    setCursor(15+2, 0);
-    if(rtc_time.second % 2 != 0) print(' ');
-    else print(':');
-
-    setCursor(15+3, 0);
-    printSubstr(buf, 14, 16);
+    printSubstr(buf, 11, 16);
 
     // print:
     // 21.09.2022
@@ -197,3 +188,38 @@ void I2CLCD::showStatus(void){
     print((int)dht.readHumidity());
     print('%');    
 }
+
+void I2CLCD::progressbar(unsigned long value, unsigned long max, int row, int col){
+    #define REFRESH_RATE 250 // [ms]
+
+    static uint8_t pattern = 0b10110101;
+    static uint8_t height, i;
+    static unsigned char stack[8];
+
+    static unsigned long t_refreshed = 0;
+    if(millis() - t_refreshed < REFRESH_RATE) return;
+
+    height = 8*value/max;
+
+    // full brick
+    memset(stack, 0xff, 8);
+
+    // empty to 8-height
+    for(i = 0; i < 8-height; i++){
+        stack[i] = 0;
+    }
+
+    // the line in between
+    if(height <= 8){
+        // https://stackoverflow.com/questions/13289397/circular-shift-in-c
+        pattern = (pattern << 1) | (pattern >> 7);
+        stack[8-height] = pattern;
+    }
+
+    createChar(CC_PROGRESS, stack);
+    setCursor(col, row);
+    write(byte(CC_PROGRESS));
+
+    t_refreshed = millis();
+}
+

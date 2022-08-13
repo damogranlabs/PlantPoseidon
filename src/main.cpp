@@ -68,8 +68,6 @@ void setup()
     setup_menus();
 
     lcd.print(F("Bohdej, Kmet"));
-    delay(3000);
-    lcd.clear();
 }
 
 void loop(){
@@ -80,7 +78,7 @@ void loop(){
     if(flood_menu.is_active()) return;
     if(settings_menu.is_active()) return;
 
-    if(millis() - t > 1000){
+    if(millis() - t > UPDATE_INTERVAL){
         ds1338_read_time(&rtc_time);
 
         // nothing else to do: show status

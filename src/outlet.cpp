@@ -90,15 +90,12 @@ void Outlet::open(unsigned long duration, bool log){
     }
 
     // LCD:
-    // TODO: update clock (?)
-    // TODO: turn on backlight
-    // TODO: better indicator
-    int pos = 0;
     lcd.backlight();
-    lcd.setCursor(0, 3);
-    pos += lcd.print(F("Zalivam #"));
-    pos += lcd.print(id+1);
-    pos += lcd.print(": ");
+    lcd.clear();
+    lcd.setCursor(2, 1);
+    lcd.print(F("Zalivam #"));
+    lcd.print(id+1);
+    lcd.print(F("..."));
     
     // turn the plate
     servo.write(servo.read());
@@ -106,27 +103,33 @@ void Outlet::open(unsigned long duration, bool log){
     servo.moveToOutlet(id);
 
     // open the falve
-    // TODO
+    digitalWrite(VALVE_PIN, HIGH);
 
     // during flooding, keep an eye on 2 things:
     //  - if the stop button is pressed, stop immediately
-    //  - update 
-    unsigned long t_now = millis();
-    unsigned long t_update = t_now;
+    //  - update display
+    unsigned long t_start = millis();
+    unsigned long t_now = t_start;
+    unsigned long t_update = 0;
     unsigned long t_end = t_now + duration*1000;
+    unsigned long t_delta;
 
-    while(t_now < t_end){
+    while(t_now <= t_end){
+        t_delta = t_now - t_start;
+        lcd.progressbar(1000 + t_delta, duration*1000, 2, 0);
+
         if(t_now - t_update > 1000){
-            lcd.setCursor(pos, 3);
-            lcd.print((t_end - t_now)/1000);
-            lcd.print(F("...  "));
+            lcd.setCursor(2, 2);
+            lcd.print(1 + t_delta/1000);
+            lcd.print('/');
+            lcd.print(duration);
             t_update = t_now;
         }
 
         // stop on button press
         if(digitalRead(BTN_FLOOD_PIN) == LOW){
             // debounce or the flood menu will also be closed
-            delay(50); // TODO: maybe a more cultural debounce?
+            delay(50); // TODO: maybe a more civilised debounce?
             // wait for the button to be released
             while(digitalRead(BTN_FLOOD_PIN) == LOW) {};
             // cancel the flooding enterprise
@@ -137,12 +140,11 @@ void Outlet::open(unsigned long duration, bool log){
     }
 
     // close the falve
-    // TODO
-
-    servo.detach();
-
+    digitalWrite(VALVE_PIN, LOW);
 
     // cleanup
+    servo.detach();
+    lcd.clear();
 }
 
 void Outlet::flood(unsigned long duration){

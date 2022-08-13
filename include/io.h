@@ -3,8 +3,6 @@
 
 #include <Arduino.h>
 #include <OneButton.h>
-
-#define ENCODER_DO_NOT_USE_INTERRUPTS
 #include <Encoder.h>
 
 void setup_serial(void);

@@ -7,19 +7,23 @@
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_I2Cexp.h>
 
-
+// characters
 #define CC_LEFT 0
 #define CC_RIGHT 1
 #define CC_ON 2
 #define CC_OFF 3
 #define CC_DEGREE 4
+#define CC_PROGRESS 7 // built on-the-fly
 
 #define LCD_ADDR 0x27
 #define LCD_X_SIZE 20
 #define LCD_Y_SIZE 4
-#define LCD_BACKLIGHT_TIMEOUT 60000
+#define LCD_BACKLIGHT_TIMEOUT 30000
 
 #define LCD_BUF_SIZE (LCD_X_SIZE+1)
+
+// main screen
+#define UPDATE_INTERVAL 5000
 
 // Menu texts
 extern unsigned char arrow_left[8];
@@ -63,6 +67,7 @@ public:
     void printSubstr(char *str, int start, int end);
 
     void showStatus(void);
+    void progressbar(unsigned long value, unsigned long max, int row, int col);
 private:
     char pgm_buffer[LCD_BUF_SIZE];
     unsigned long t_backlight{};

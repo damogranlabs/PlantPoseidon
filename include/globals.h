@@ -3,7 +3,6 @@
 
 #include <DHT.h>
 #include <OneButton.h>
-#define ENCODER_DO_NOT_USE_INTERRUPTS
 #include <Encoder.h>
 #include <DS1338.h>
 

@@ -46,7 +46,8 @@ void FloodScreen::change(int direction){
 
         // make the item inactive again
         items[2]->setValue(0);
-        items[2]->renderValue();
-        items[2]->activate();
+
+        // redraw the screen
+        show(0);
     }
 }
