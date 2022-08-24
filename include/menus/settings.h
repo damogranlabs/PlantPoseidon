@@ -47,6 +47,14 @@ public:
     ServoScreen();
 
     void change(int direction);
+    void show(bool end_first);
+    void save(void);
+};
+
+class PumpScreen : public Screen
+{
+public:
+    PumpScreen();
 
     void show(bool end_first);
     void save(void);

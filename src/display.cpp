@@ -95,6 +95,10 @@ const char servo_max_label[] PROGMEM = "Max";
 const char servo_zero_label[] PROGMEM = "Pozicija #1";
 const char servo_mid_label[] PROGMEM = "Pozicija #2";
 
+// pump
+const char pump_active_label[] PROGMEM = "Vklopi";
+const char pump_warmup_label[] PROGMEM = "Zakasnitev";
+
 void I2CLCD::begin(void){
     hd44780_I2Cexp::begin(LCD_X_SIZE, LCD_Y_SIZE);
 

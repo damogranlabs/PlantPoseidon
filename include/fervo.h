@@ -4,11 +4,11 @@
 #include <Arduino.h>
 #include <Servo.h>
 
+#include "pinout.h"
+
 ///
 /// Settings
 ///
-#define SERVO_ADDRESS 128 // EEPROM
-
 // default values; these should be standard but no one cares
 // so they can be modified by the user
 #define SERVO_MAX 2300 // maximum pulse width that still turns the shaft
@@ -52,17 +52,18 @@ public:
 
     void load(void);
     void save(void);
-
+    
     // same as write() but with a finite acceleration
     void easeMove(int new_angle);
     void moveToOutlet(int id){ easeMove(outletToAngle(id)); };
 private:
     servo_data data;
-
+    
     int outletToAngle(int i_outlet);
 };
 
-void setup_servo(void);
 int outletToAngle(int i_outlet);
+
+#define FERVO_SIZE (sizeof(struct servo_data) + sizeof(unsigned long))
 
 #endif

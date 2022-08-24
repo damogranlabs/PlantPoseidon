@@ -12,7 +12,7 @@
 /// Menu
 ///
 SettingsMenu::SettingsMenu(void){
-    n_screens = N_OUTLETS + 2;
+    n_screens = N_OUTLETS + 3;
     screens = new Screen *[n_screens];
 }
 
@@ -21,8 +21,10 @@ void SettingsMenu::begin(void){
         screens[i] = new OutletScreen(outlets[i]);
     }
     
-    screens[n_screens-2] = new ClockScreen();
-    screens[n_screens-1] = new ServoScreen();
+    screens[n_screens-3] = new ClockScreen();
+    screens[n_screens-2] = new ServoScreen();
+    screens[n_screens-1] = new PumpScreen();
+
 }
 
 ///
@@ -121,17 +123,16 @@ ServoScreen::ServoScreen(void)
     n_items = 4;
     items = new Item *[n_items];
 
-    items[0] = new Item(servo_min_label, 1, 2, servo.getMin(), true, (char)0, 100, 3000);
-    items[1] = new Item(servo_max_label, 1, 11, servo.getMax(), true, (char)0, 100, 3000);
-    items[2] = new Item(servo_zero_label, 2, 2, servo.getZero(), true, (char)0, 100, 3000);
-    items[3] = new Item(servo_mid_label, 3, 2, servo.getMid(), true, (char)0, 100, 3000);
+    items[0] = new Item(servo_min_label, 1, 2, servo.getMin(), true, (char)0, MIN_PULSE_WIDTH, MAX_PULSE_WIDTH);
+    items[1] = new Item(servo_max_label, 1, 11, servo.getMax(), true, (char)0, MIN_PULSE_WIDTH, MAX_PULSE_WIDTH);
+    items[2] = new Item(servo_zero_label, 2, 2, servo.getZero(), true, (char)0, MIN_PULSE_WIDTH, MAX_PULSE_WIDTH);
+    items[3] = new Item(servo_mid_label, 3, 2, servo.getMid(), true, (char)0, MIN_PULSE_WIDTH, MAX_PULSE_WIDTH);
 };
 
-void ServoScreen::show(bool forward)
-{
+void ServoScreen::show(bool forward){
     lcd.setCursor(0, 0);
     lcd.print(F("Servo"));
-
+    
     Screen::show(forward);
 }
 
@@ -146,6 +147,29 @@ void ServoScreen::save(void){
     servo.setZero(items[2]->getValue());
     servo.setMid(items[3]->getValue());
     servo.save();
+}
+
+/************** Pump screen **************/
+PumpScreen::PumpScreen(void)
+{
+    n_items = 2;
+    items = new Item *[n_items];
+
+    items[0] = new BoolItem(pump_active_label, 1, 2, pump.getEnabled());
+    items[1] = new Item(pump_warmup_label, 2, 2, pump.getDelay(), false, 's', 0, 15);
+}
+
+void PumpScreen::show(bool forward){
+    lcd.setCursor(0, 0);
+    lcd.print(F("Crpalka"));
+
+    Screen::show(forward);
+}
+
+void PumpScreen::save(void){
+    pump.setEnabled(items[0]->getValue() != 0);
+    pump.setDelay(items[1]->getValue());
+    pump.save();
 }
 
 ///

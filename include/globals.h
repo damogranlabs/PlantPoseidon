@@ -9,8 +9,14 @@
 #include "display.h"
 #include "outlet.h"
 #include "fervo.h"
+#include "pump.h"
 #include "menus/settings.h"
 #include "menus/flood.h"
+
+// EEPROM addresses
+#define ADDR_OUTLET_OFFSET 0
+#define ADDR_FERVO_OFFSET (OUTLET_SIZE*N_OUTLETS)
+#define ADDR_PUMP_OFFSET (ADDR_FERVO_OFFSET + FERVO_SIZE)
 
 extern I2CLCD lcd;
 
@@ -27,9 +33,9 @@ extern DHT dht;
 
 extern Outlet *outlets[N_OUTLETS];
 extern Fervo servo;
+extern Pump pump;
 
 extern SettingsMenu settings_menu;
 extern FloodMenu flood_menu;
-
 
 #endif

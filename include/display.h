@@ -22,9 +22,6 @@
 
 #define LCD_BUF_SIZE (LCD_X_SIZE+1)
 
-// main screen
-#define UPDATE_INTERVAL 5000
-
 // Menu texts
 extern unsigned char arrow_left[8];
 extern unsigned char arrow_right[8];
@@ -47,6 +44,9 @@ extern const char servo_min_label[] PROGMEM;
 extern const char servo_max_label[] PROGMEM;
 extern const char servo_zero_label[] PROGMEM;
 extern const char servo_mid_label[] PROGMEM;
+
+extern const char pump_active_label[] PROGMEM;
+extern const char pump_warmup_label[] PROGMEM;
 
 ///
 /// extend LCD with backlight tracking

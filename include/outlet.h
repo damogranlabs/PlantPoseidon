@@ -49,10 +49,13 @@ public:
 private:
     int id;
     uint16_t address;
-    uint16_t getAddress(void){ return id*sizeof(schedule) + sizeof(unsigned long); };
 
     bool pastDue(void);
     void open(unsigned long duration, bool log);
+    void close(void);
 };
+
+// EEPROM address:
+#define OUTLET_SIZE (sizeof(struct schedule_data) + sizeof(unsigned long))
 
 #endif

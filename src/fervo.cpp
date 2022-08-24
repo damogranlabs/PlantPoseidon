@@ -12,18 +12,17 @@
 ///
 /// Methods and all
 ///
-Fervo::Fervo(void) : Servo()
-{
+Fervo::Fervo(void) : Servo(){
     load();
 }
 
-void Fervo::load(void)
-{
+void Fervo::load(void){
     // same as Outlet::load but different
-    EEPROM.get(SERVO_ADDRESS, data);
+    // TODO: write a generic function to avoid repeating
+    EEPROM.get(ADDR_FERVO_OFFSET, data);
 
     unsigned long saved_crc;
-    EEPROM.get(SERVO_ADDRESS + sizeof(struct servo_data), saved_crc);
+    EEPROM.get(ADDR_FERVO_OFFSET + sizeof(struct servo_data), saved_crc);
     unsigned long loaded_crc = crc((uint8_t *)&data, sizeof(data));
 
     if (saved_crc != loaded_crc){
@@ -34,15 +33,16 @@ void Fervo::load(void)
     }
 }
 
-void Fervo::save(void)
-{
-    EEPROM.put(SERVO_ADDRESS, data);
+void Fervo::save(void){
+    EEPROM.put(ADDR_FERVO_OFFSET, data);
 
     unsigned long check = crc((uint8_t *)&data, sizeof(data));
-    EEPROM.put(SERVO_ADDRESS + sizeof(data), check);
+    EEPROM.put(ADDR_FERVO_OFFSET + sizeof(data), check);
 }
 
 void Fervo::easeMove(int new_angle){
+    attach(SERV1_PIN); // detaching will be done in the main loop()
+
     if (new_angle < 200){
         // when setting limits through menu, the servo moves to current item value,
         // which is in 'microseconds'; this is also the convention of the Servo library
@@ -70,13 +70,4 @@ int Fervo::outletToAngle(int i_outlet){
     if(pos_outlet > getMax()) pos_outlet -= (N_OUTLETS/2)*delta_outlet + delta_outlet/2;
 
     return pos_outlet;
-}
-
-void setup_servo(void)
-{
-    // write something to define starting point
-    // ACHTUNG, that will be a quick move
-    servo.attach(SERV1_PIN);
-    servo.write(90);
-    servo.detach();
 }

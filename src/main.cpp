@@ -7,12 +7,13 @@
 #include "display.h"
 #include "outlet.h"
 #include "fervo.h"
+#include "pump.h"
 #include "menus/settings.h"
 #include "menus/flood.h"
 #include "util.h"
 #include "DS1338.h"
 
-// timekeeping
+// global objects
 struct rtctime_t rtc_time;
 
 I2CLCD lcd(LCD_ADDR,
@@ -32,10 +33,12 @@ DHT dht(DHT_PIN, DHT22);
 
 Outlet *outlets[N_OUTLETS];
 Fervo servo;
+Pump pump;
 
 SettingsMenu settings_menu;
 FloodMenu flood_menu;
 
+// local stuff
 int i = 0;
 unsigned long t = 0;
 
@@ -63,11 +66,12 @@ void setup()
     setup_gpio();
     setup_rtc();
     dht.begin();
-    setup_servo();
     setup_outlets();
     setup_menus();
 
     lcd.print(F("Bohdej, Kmet"));
+    delay(2000);
+    lcd.clear();
 }
 
 void loop(){
@@ -78,14 +82,21 @@ void loop(){
     if(flood_menu.is_active()) return;
     if(settings_menu.is_active()) return;
 
-    if(millis() - t > UPDATE_INTERVAL){
+    if(millis() - t > 1000){
         ds1338_read_time(&rtc_time);
 
-        // nothing else to do: show status
+        // detach the servo if it's still active;
+        // not only that is draws current but reading from DHT
+        // will get in the way (noInterrupts() and all)
+        servo.detach();
+
+        // show status
         lcd.showStatus();
         
-        i = (i+1) % N_OUTLETS;
-        outlets[i]->check();
+        // anything to water?
+        for(i = 0; i < N_OUTLETS; i++){
+            outlets[i]->check();
+        }
 
         t = millis();
     }

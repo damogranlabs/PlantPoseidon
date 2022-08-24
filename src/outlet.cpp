@@ -14,11 +14,12 @@ Outlet::Outlet(int outlet_id){
     id = outlet_id;
 
     // address: schedule + CRC
-    address = (sizeof(schedule) + sizeof(unsigned long)) * id;
+    address = OUTLET_SIZE*id;
     load();
 }
 
 void Outlet::load(void){
+    // TODO: DRY
     EEPROM.get(address, schedule);
 
     // CRC check if everything is OK;
@@ -98,25 +99,23 @@ void Outlet::open(unsigned long duration, bool log){
     lcd.print(F("..."));
     
     // turn the plate
-    servo.write(servo.read());
-    servo.attach(SERV1_PIN);
     servo.moveToOutlet(id);
+
+    // turn on the pump
+    if(!pump.start()) return;
 
     // open the falve
     digitalWrite(VALVE_PIN, HIGH);
 
-    // during flooding, keep an eye on 2 things:
-    //  - if the stop button is pressed, stop immediately
-    //  - update display
     unsigned long t_start = millis();
     unsigned long t_now = t_start;
     unsigned long t_update = 0;
     unsigned long t_end = t_now + duration*1000;
     unsigned long t_delta;
 
-    while(t_now <= t_end){
+    while((t_now <= t_end) && (digitalRead(BTN_FLOOD_PIN) == HIGH)){
         t_delta = t_now - t_start;
-        lcd.progressbar(1000 + t_delta, duration*1000, 2, 0);
+        lcd.progressbar(1000 + t_delta, duration*1000, 2, 1);
 
         if(t_now - t_update > 1000){
             lcd.setCursor(2, 2);
@@ -126,34 +125,30 @@ void Outlet::open(unsigned long duration, bool log){
             t_update = t_now;
         }
 
-        // stop on button press
-        if(digitalRead(BTN_FLOOD_PIN) == LOW){
-            // debounce or the flood menu will also be closed
-            delay(50); // TODO: maybe a more civilised debounce?
-            // wait for the button to be released
-            while(digitalRead(BTN_FLOOD_PIN) == LOW) {};
-            // cancel the flooding enterprise
-            break;
-        }
-
         t_now = millis();
     }
+}
 
+void Outlet::close(void){
     // close the falve
     digitalWrite(VALVE_PIN, LOW);
 
-    // cleanup
-    servo.detach();
+    // turn off the pump
+    pump.stop();
+    
+    // display
     lcd.clear();
 }
 
 void Outlet::flood(unsigned long duration){
     open(duration, false);
+    close();
 }
 
 bool Outlet::check(void){
     if(pastDue()){
         open(schedule.duration, true);
+        close();
         return true;
     }
 
